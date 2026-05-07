@@ -61,15 +61,6 @@ const AuthCallback = () => {
         let session = sessionData.session;
 
         if (!session && window.location.hash.includes("access_token")) {
-          const { data: urlData, error: urlError } =
-            await supabase.auth.getSessionFromUrl({ storeSession: true });
-          if (urlError) {
-            throw urlError;
-          }
-          session = urlData.session ?? null;
-        }
-
-        if (!session && window.location.hash.includes("access_token")) {
           const hashParams = new URLSearchParams(window.location.hash.slice(1));
           const accessToken = hashParams.get("access_token");
           const refreshToken = hashParams.get("refresh_token");
