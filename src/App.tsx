@@ -1,7 +1,8 @@
 import { createTheme, MantineProvider } from "@mantine/core";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { NuqsAdapter } from "nuqs/adapters/react";
+import { useEffect, useState } from "react";
+import type { ComponentType } from "react";
 import { Outlet, Route, Routes } from "react-router-dom";
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -76,6 +77,7 @@ import InstitutionOrIndividual from "./pages/InstitutionOrIndividual";
 import FinishingSchool from "./pages/FinishingSchool";
 import AcademyDetail from "./pages/AcademyDetail";
 import SkillDevelopment from "./pages/SkillDevelopment";
+import AuthCallback from "./pages/AuthCallback";
 import PrivacyPolicy from "./components1/PrivacyPolicy";
 import RefundPolicy from "./components1/RefundPolicy";
 import TermsConditions from "./components1/TermsConditions";
@@ -97,6 +99,34 @@ const theme = createTheme({
   fontFamilyMonospace: "'Poppins', sans-serif",
   headings: { fontFamily: "'Poppins', sans-serif" },
 });
+
+function ReactQueryDevtoolsGate() {
+  const [Devtools, setDevtools] = useState<ComponentType | null>(null);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) {
+      return;
+    }
+
+    let isMounted = true;
+
+    import("@tanstack/react-query-devtools").then((module) => {
+      if (isMounted) {
+        setDevtools(() => module.ReactQueryDevtools);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (!Devtools) {
+    return null;
+  }
+
+  return <Devtools />;
+}
 
 function App() {
   return (
@@ -121,6 +151,7 @@ function App() {
 
                 {/* <Route path="/blogs/new" element={<BlogCreate />} /> */}
                 <Route path="/login" element={<Login />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/refund-policy" element={<RefundPolicy />} />
                 <Route path="/terms-condition" element={<TermsConditions />} />
@@ -252,7 +283,7 @@ function App() {
               autoClose={6000}
               position="bottom-right"
             />
-            <ReactQueryDevtools />
+            <ReactQueryDevtoolsGate />
           </QueryClientProvider>
         </NuqsAdapter>
       </ErrorBoundary>

@@ -1,8 +1,7 @@
 import { Button } from "@/components1/ui/button";
 import { Input } from "@/components1/ui/input";
-import { Label } from "@/components1/ui/label";
 import { Link } from "react-router-dom";
-import { signInWithGoogle } from "../../lib/firebaseAuth";
+import { signInWithGoogle } from "../../lib/supabaseAuth";
 import { toast } from "react-toastify";
 
 interface LoginFormProps {
@@ -31,10 +30,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
     if (onGoogleSignIn) {
       onGoogleSignIn();
     } else {
-      // Fallback to direct Firebase auth if no prop provided
+      // Fallback to direct Supabase auth if no prop provided
       try {
-        const user = await signInWithGoogle();
-        toast.success(`Welcome ${user.displayName || user.email}!`);
+        await signInWithGoogle();
       } catch (error: any) {
         console.error("Google OAuth login failed:", error);
         toast.error(error.message || "Failed to sign in with Google");

@@ -6,5 +6,5 @@ export const API_URL = true
 // export const API_URL = "https://stem-for-society-api-lnj3a.ondigitalocean.app";
 
 export const PAYMENT_MODE = "test";
-export const RZPY_KEYID = "rzp_live_Sg7L8dSg7G7EGE";
+export const RZPY_KEYID = import.meta.env.VITE_RZPY_KEYID ?? "";
 export const INVALID_SESSION_MSG = "Invalid session, please login again";

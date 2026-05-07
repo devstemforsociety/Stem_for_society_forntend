@@ -9,10 +9,7 @@ import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { api, queryClient } from "../lib/api";
 import { GenericError, GenericResponse } from "../lib/types";
-import { signInWithGoogle } from "../lib/firebaseAuth";
-import { useUser } from "../lib/hooks";
-import { API_URL } from "../Constants";
-import PhoneVerificationModal from "@/components1/PhoneVerificationModal";
+import { signInWithGoogle } from "../lib/supabaseAuth";
 
 type SignUpForm = {
   firstName: string;
@@ -24,8 +21,7 @@ type SignUpForm = {
 };
 
 // backend API hook
-function useSignUp() {
-  const navigate = useNavigate();
+function useSignUp(navigate: ReturnType<typeof useNavigate>) {
   return useMutation<
     GenericResponse,
     AxiosError<GenericError>,
@@ -72,11 +68,8 @@ const Signup = () => {
   });
 
   const [isGoogleSigningUp, setIsGoogleSigningUp] = useState(false);
-  const [showPhoneVerification, setShowPhoneVerification] = useState(false);
-  const [googleUserEmail, setGoogleUserEmail] = useState("");
-  const [googleUserData, setGoogleUserData] = useState<any>(null);
 
-  const signUpMutation = useSignUp();
+  const signUpMutation = useSignUp(navigate);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -119,97 +112,15 @@ const Signup = () => {
     }
   };
 
-  const { signIn } = useUser({
-    extraOnSuccess: () => {
-      toast.success("Signup was successful!");
-      setIsGoogleSigningUp(false);
-      navigate("/");
-    },
-  });
-
-  // Handle phone verification success - register user with verified phone
-  const handlePhoneVerificationSuccess = async (phoneNumber: string) => {
-    setShowPhoneVerification(false);
-    
-    if (googleUserData) {
-      try {
-        // Clear any old session data before new registration
-        queryClient.clear();
-        localStorage.clear();
-        
-        // Register user with backend including phone number
-        const response = await fetch(`${API_URL}/auth/register`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ...googleUserData,
-            mobile: phoneNumber, // Add phone number to registration
-          }),
-        });
-
-        if (response.ok) {
-          // Auto-login after successful registration
-          signIn({
-            email: googleUserData.email,
-            password: googleUserData.password,
-          });
-        } else {
-          const errorData = await response.json();
-          toast.error(errorData.message || "Registration failed");
-        }
-      } catch (error) {
-        console.error('Registration error:', error);
-        toast.error("Failed to complete registration");
-      }
-    }
-  };
-
-  // Google sign-up function - show phone verification modal after Google OAuth
+  // Google sign-up function - redirects to OAuth flow
   const handleGoogleSignup = async () => {
     try {
       // Disable all background activities
-      setIsGoogleSigningUp(true);      
-      const firebaseUser = await signInWithGoogle();
-      
-      const googleEmail = firebaseUser.email!;
-      // Create a CONSISTENT password based on Firebase UID (not random)
-      const googlePassword = `Google${firebaseUser.uid.substring(0, 6)}123@!`;
-      const firstName = (firebaseUser.displayName?.split(' ')[0] || 'GoogleUser').padEnd(5, 'X');
-      const lastName = firebaseUser.displayName?.split(' ').slice(1).join(' ') || '';
-      
-      // Store user data for registration after phone verification
-      // Note: Don't clear Firebase session here - needed for phone verification
-      setGoogleUserData({
-        email: googleEmail,
-        firstName,
-        lastName,
-        password: googlePassword,
-        confirmPassword: googlePassword,
-      });
-      
-      setGoogleUserEmail(googleEmail);
-      setIsGoogleSigningUp(false);
-      setShowPhoneVerification(true);
-      
+      setIsGoogleSigningUp(true);
+      await signInWithGoogle("signup");
     } catch (error: any) {
       console.error('Google sign-up error:', error);
-      
-      // Check if user cancelled the sign-in process
-      if (error.code === 'auth/popup-closed-by-user' || 
-          error.code === 'auth/cancelled-popup-request' ||
-          error.code === 'auth/popup-blocked' ||
-          error.message?.includes('popup') ||
-          error.message?.includes('cancelled') ||
-          error.message?.includes('closed') ||
-          error.message?.includes('aborted')) {
-        // User cancelled - don't show error toast, just reset loading state
-        console.log('User cancelled Google sign-up');
-      } else {
-        // Show error for actual failures
-        toast.error(error.message || "Failed to sign up with Google");
-      }
-      
-      // Always reset loading state when there's any error
+      toast.error(error.message || "Failed to sign up with Google");
       setIsGoogleSigningUp(false);
     }
   };
@@ -219,14 +130,6 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Phone Verification Modal */}
-      <PhoneVerificationModal
-        isOpen={showPhoneVerification}
-        onClose={() => setShowPhoneVerification(false)}
-        onSuccess={handlePhoneVerificationSuccess}
-        userEmail={googleUserEmail}
-      />
-      
       {/* Background */}
       <div
         className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-300 ${

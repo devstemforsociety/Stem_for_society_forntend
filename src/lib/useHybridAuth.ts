@@ -1,104 +1,45 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useQueryClient } from "@tanstack/react-query";
-import { 
-  signInWithGoogle as firebaseSignInWithGoogle, 
-  signOutUser as firebaseSignOut, 
+import {
+  signInWithGoogle as supabaseSignInWithGoogle,
+  signOutUser as supabaseSignOut,
   onAuthStateChange,
-  AuthUser 
-} from "./firebaseAuth";
+  AuthUser,
+} from "./supabaseAuth";
 import { useUser } from "./hooks";
-import { UserAuthResponse } from "./types";
-import { api } from "./api";
-import { API_URL } from "../Constants";
 
 type UseHybridAuthArgs = {
   extraOnSuccess?: () => void;
 };
 
 export function useHybridAuth({ extraOnSuccess = () => null }: UseHybridAuthArgs = {}) {
-  const [firebaseUser, setFirebaseUser] = useState<AuthUser | null>(null);
-  const [isFirebaseLoading, setIsFirebaseLoading] = useState(true);
+  const [supabaseUser, setSupabaseUser] = useState<AuthUser | null>(null);
+  const [isSupabaseLoading, setIsSupabaseLoading] = useState(true);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   
   // Use existing email auth system
   const { user: emailUser, signIn: emailSignIn, signOut: emailSignOut, isSigningIn, isLoading: emailLoading } = useUser({ extraOnSuccess });
 
-  // Listen to Firebase auth state changes
+  // Listen to Supabase auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChange((user) => {
-      setFirebaseUser(user);
-      setIsFirebaseLoading(false);
+      setSupabaseUser(user);
+      setIsSupabaseLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Always prioritize emailUser (backend authenticated user) over firebaseUser
+  // Always prioritize emailUser (backend authenticated user) over supabaseUser
   const user = emailUser;
 
-  const isLoading = emailLoading || isFirebaseLoading;
+  const isLoading = emailLoading || isSupabaseLoading;
 
-  // Sign in with Google and use exact same backend flow as email auth
+  // Start Google OAuth flow (backend sign-in happens in callback page)
   const signInGoogle = async () => {
     try {
-      const firebaseUserData = await firebaseSignInWithGoogle();
-      setFirebaseUser(firebaseUserData);
-      
-      // Use the EXACT same backend endpoint as normal email login: /auth/sign-in
-      // But send Google user data in the same format
-      try {
-        const response = await api().post(`${API_URL}/auth/sign-in`, {
-          email: firebaseUserData.email,
-          password: `google_${firebaseUserData.uid}`, // Use Google UID as password identifier
-          isGoogleAuth: true,
-          googleData: {
-            name: firebaseUserData.displayName,
-            googleId: firebaseUserData.uid,
-            photoURL: firebaseUserData.photoURL
-          }
-        });
-        
-        // Use EXACT same success handling as email auth
-        queryClient.setQueryData(["auth"], response.data.data);
-        toast.success("Login was successful!");
-        extraOnSuccess();
-      } catch (backendError: any) {
-        // If user doesn't exist, register them first using same register endpoint
-        try {
-          await api().post(`${API_URL}/auth/register`, {
-            email: firebaseUserData.email,
-            firstName: firebaseUserData.displayName?.split(' ')[0] || 'User',
-            lastName: firebaseUserData.displayName?.split(' ').slice(1).join(' ') || '',
-            password: `google_${firebaseUserData.uid}`,
-            mobile: '', // Optional for Google users
-            isGoogleAuth: true,
-            googleId: firebaseUserData.uid
-          });
-          
-          // Now sign in with same endpoint
-          const response = await api().post(`${API_URL}/auth/sign-in`, {
-            email: firebaseUserData.email,
-            password: `google_${firebaseUserData.uid}`,
-            isGoogleAuth: true,
-            googleData: {
-              name: firebaseUserData.displayName,
-              googleId: firebaseUserData.uid,
-              photoURL: firebaseUserData.photoURL
-            }
-          });
-          
-          queryClient.setQueryData(["auth"], response.data.data);
-          toast.success("Login was successful!");
-          extraOnSuccess();
-        } catch (registerError: any) {
-          console.error("Google auth failed:", registerError);
-          toast.error("Authentication failed. Please try again.");
-          queryClient.setQueryData(["auth"], null);
-        }
-      }
+      await supabaseSignInWithGoogle();
     } catch (error: any) {
       toast.error(error.message || "Failed to sign in with Google");
     }
@@ -108,9 +49,9 @@ export function useHybridAuth({ extraOnSuccess = () => null }: UseHybridAuthArgs
   const signOut = async () => {
     try {
       // Sign out from both systems
-      if (firebaseUser) {
-        await firebaseSignOut();
-        setFirebaseUser(null);
+      if (supabaseUser) {
+        await supabaseSignOut();
+        setSupabaseUser(null);
       }
       if (emailUser) {
         emailSignOut();
@@ -129,7 +70,7 @@ export function useHybridAuth({ extraOnSuccess = () => null }: UseHybridAuthArgs
     signIn: emailSignIn, // Keep email sign-in for backend integration
     signInGoogle,
     signOut,
-    firebaseUser,
+    supabaseUser,
     emailUser
   };
 }

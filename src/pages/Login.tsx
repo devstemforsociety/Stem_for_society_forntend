@@ -2,11 +2,10 @@ import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useUser } from "../lib/hooks";
-import { signInWithGoogle } from "../lib/firebaseAuth";
-import { API_URL } from "../Constants";
+import { queryClient } from "../lib/api";
+import { signInWithGoogle } from "../lib/supabaseAuth";
 import LoginStages from "@/components1/ui/LoginStages";
 import LoginForm from "@/components1/ui/LoginForm";
-import { queryClient } from "@/lib/api";
 
 interface LoginFormData {
   email: string;
@@ -28,61 +27,15 @@ const Login = () => {
     },
   });
 
-  // Google sign-in function - direct login without phone verification
+  // Google sign-in function - redirects to OAuth flow
   const handleGoogleSignIn = async () => {
     try {
       // Disable all background activities
-      setIsGoogleSigningIn(true);      
-      const firebaseUser = await signInWithGoogle();
-      
-      const googleEmail = firebaseUser.email!;
-      // Create a CONSISTENT password based on Firebase UID (not random)
-      const googlePassword = `Google${firebaseUser.uid.substring(0, 6)}123@!`;
-      const firstName = (firebaseUser.displayName?.split(' ')[0] || 'GoogleUser').padEnd(5, 'X');
-      const lastName = firebaseUser.displayName?.split(' ').slice(1).join(' ') || '';
-      
-      // CLEAR PREVIOUS SESSION DATA BEFORE NEW LOGIN
-      queryClient.clear();
-      localStorage.clear();
-      
-      // Always try registration first without mobile (will fail silently if user exists)
-      fetch(`${API_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: googleEmail,
-          firstName, lastName,
-          password: googlePassword,
-          confirmPassword: googlePassword,
-          // No mobile field - will be added during signup if needed
-        }),
-      }).catch(() => {}); // Ignore registration errors
-      
-      // Immediately attempt login (works for both new and existing users)
-      signIn({
-        email: googleEmail,
-        password: googlePassword
-      });
-      
+      setIsGoogleSigningIn(true);
+      await signInWithGoogle("signin");
     } catch (error: any) {
       console.error('Google sign-in error:', error);
-      
-      // Check if user cancelled the sign-in process
-      if (error.code === 'auth/popup-closed-by-user' || 
-          error.code === 'auth/cancelled-popup-request' ||
-          error.code === 'auth/popup-blocked' ||
-          error.message?.includes('popup') ||
-          error.message?.includes('cancelled') ||
-          error.message?.includes('closed') ||
-          error.message?.includes('aborted')) {
-        // User cancelled - don't show error toast, just reset loading state
-        console.log('User cancelled Google sign-in');
-      } else {
-        // Show error for actual failures
-        toast.error(error.message || "Failed to sign in with Google");
-      }
-      
-      // Always reset loading state when there's any error
+      toast.error(error.message || "Failed to sign in with Google");
       setIsGoogleSigningIn(false);
     }
   };
