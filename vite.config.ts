@@ -13,10 +13,12 @@ export default defineConfig({
           'vendor-supabase': ['@supabase/supabase-js'],
           'vendor-ui': ['@mantine/core', '@mantine/hooks', '@radix-ui/react-dialog', '@radix-ui/react-popover', 'lucide-react', 'framer-motion'],
           'vendor-utils': ['axios', 'date-fns', 'dayjs', 'zod', 'react-hook-form', '@tanstack/react-query'],
+          'vendor-icons': ['react-icons'],
+          'vendor-charts': ['recharts']
         }
       }
     },
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 2500
   },
   plugins: [react()],
   resolve: {
