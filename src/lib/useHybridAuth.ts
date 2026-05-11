@@ -5,7 +5,7 @@ import {
   signInWithGoogle as supabaseSignInWithGoogle,
   signOutUser as supabaseSignOut,
   onAuthStateChange,
-  AuthUser,
+  type AuthUser,
 } from "./supabaseAuth";
 import { useUser } from "./hooks";
 
