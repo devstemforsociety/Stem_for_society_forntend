@@ -15,7 +15,7 @@ const api = (queryKeyName: string = "auth") => {
     let token = queryClient.getQueryData<UserAuthResponse>([
       queryKeyName,
     ])?.token;
-    
+
     // Fallback to localStorage if not in cache
     if (!token) {
       const stored = localStorage.getItem("studentAuth");
@@ -28,12 +28,28 @@ const api = (queryKeyName: string = "auth") => {
         }
       }
     }
-    
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   });
+
+  api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response?.status === 401) {
+        // Clear all session states
+        queryClient.clear();
+        localStorage.clear();
+        
+        // Force redirect to login
+        window.location.href = "/login";
+      }
+      return Promise.reject(error);
+    }
+  );
+
   return api;
 };
 export { api };

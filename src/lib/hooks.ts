@@ -40,8 +40,8 @@ export function useUser({ extraOnSuccess = () => null }: UseUserArgs = {}) {
         if (stored) {
           try {
             const parsed = JSON.parse(stored);
-            // Check if stored data has expired (24 hours)
-            if (parsed.timestamp && Date.now() - parsed.timestamp > 24 * 60 * 60 * 1000) {
+            // Check if stored data has expired (7 days)
+            if (parsed.timestamp && Date.now() - parsed.timestamp > 7 * 24 * 60 * 60 * 1000) {
               localStorage.removeItem("studentAuth");
               return null;
             }
@@ -147,8 +147,13 @@ export function usePartner({ extraOnSuccess = () => null }: UseUserArgs = {}) {
         if (storedAuth) {
           try {
             authObject = JSON.parse(storedAuth);
+            // Check if stored data has expired (7 days)
+            if (authObject.timestamp && Date.now() - authObject.timestamp > 7 * 24 * 60 * 60 * 1000) {
+              localStorage.removeItem("partnerAuth");
+              authObject = null;
+            }
             // Validate the stored data before using it
-            if (authObject && authObject.user && authObject.token) {
+            else if (authObject && authObject.user && authObject.token) {
               // Restore to cache
               queryClient.setQueryData(["partnerAuth"], authObject);
             } else {
@@ -241,8 +246,13 @@ export function useAdmin({ extraOnSuccess = () => null }: UseUserArgs = {}) {
         if (storedAuth) {
           try {
             authObject = JSON.parse(storedAuth);
+            // Check if stored data has expired (7 days)
+            if (authObject.timestamp && Date.now() - authObject.timestamp > 7 * 24 * 60 * 60 * 1000) {
+              localStorage.removeItem("adminAuth");
+              authObject = null;
+            }
             // Validate the stored data before using it
-            if (authObject && authObject.user && authObject.token) {
+            else if (authObject && authObject.user && authObject.token) {
               // Restore to cache
               queryClient.setQueryData(["adminAuth"], authObject);
             } else {
