@@ -24,6 +24,7 @@ export type UserAuthResponse<
   T extends "STUDENT" | "PARTNER" | "ADMIN" = "STUDENT",
 > = {
   token: string;
+  timestamp?: number;
   user: {
     email: string;
     firstName: string;
