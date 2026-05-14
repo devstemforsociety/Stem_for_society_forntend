@@ -210,16 +210,19 @@ const AcademyDetail = () => {
     if (!course?.startDate || !course?.endDate) return "6 months";
     const start = dayjs(course.startDate);
     const end = dayjs(course.endDate);
-    const weeks = end.diff(start, 'week');
-    const months = end.diff(start, 'month');
-    const days = end.diff(start, 'day');
     
-    if (months > 0) {
+    // Get exact floating-point days and round up. Ensure a minimum of 1 day.
+    const days = Math.max(1, Math.ceil(end.diff(start, 'day', true)));
+    
+    if (days >= 30) {
+      const months = Math.floor(days / 30);
       return `${months} month${months > 1 ? 's' : ''}`;
     }
-    else if(weeks > 0) {
+    else if (days >= 7) {
+      const weeks = Math.floor(days / 7);
       return `${weeks} week${weeks > 1 ? 's' : ''}`;
     }
+    
     return `${days} day${days > 1 ? 's' : ''}`;
   };
 
@@ -232,8 +235,8 @@ const AcademyDetail = () => {
   // Get formatted time range
   const getTimeRange = () => {
     if (!course?.startDate || !course?.endDate) return "10:00 AM - 12:00 PM";
-    const startTime = dayjs.utc(course.startDate).format("hh:mm A");
-    const endTime = dayjs.utc(course.endDate).format("hh:mm A");
+    const startTime = dayjs(course.startDate).format("hh:mm A");
+    const endTime = dayjs(course.endDate).format("hh:mm A");
     return `${startTime} - ${endTime}`;
   };
 
