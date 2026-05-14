@@ -577,13 +577,13 @@ const AcademyDetail = () => {
               <>
                 <div className="bg-gradient-to-br from-[#0D9488] to-[#0389FF] rounded-2xl p-4 md:p-6 lg:p-8 text-white shadow-xl">
                   <div className="text-center mb-4 md:mb-6">
-                    <p className="text-sm md:text-base opacity-90 mb-2">With</p>
+                    <p className="text-sm md:text-base opacity-90 mb-2">
+                      Begin learning with
+                    </p>
                     <p className="text-3xl md:text-4xl font-bold">
                       ₹{Number(course.cost || 0).toLocaleString()}
                     </p>
-                    <p className="text-sm md:text-base opacity-90 mt-2">
-                      confirm your seat
-                    </p>
+                    <p className="text-sm md:text-base opacity-90 mt-2">today</p>
                   </div>
 
                   <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 md:p-6 mb-4 md:mb-6">
@@ -635,13 +635,13 @@ const AcademyDetail = () => {
               <>
                 <div className="bg-gradient-to-br from-[#0D9488] to-[#0389FF] rounded-2xl p-4 md:p-6 lg:p-8 text-white shadow-xl">
                   <div className="text-center mb-4 md:mb-6">
-                    <p className="text-sm md:text-base opacity-90 mb-2">With</p>
+                    <p className="text-sm md:text-base opacity-90 mb-2">
+                      Begin learning with
+                    </p>
                     <p className="text-3xl md:text-4xl font-bold">
                       ₹{Number(course.cost || 0).toLocaleString()}
                     </p>
-                    <p className="text-sm md:text-base opacity-90 mt-2">
-                      confirm your seat
-                    </p>
+                    <p className="text-sm md:text-base opacity-90 mt-2">today</p>
                   </div>
 
                   <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 md:p-6 mb-4 md:mb-6">
