@@ -133,36 +133,11 @@ const AuthCallback = () => {
           queryClient.setQueryData(["auth"], response.data.data);
           localStorage.setItem("studentAuth", JSON.stringify(authData));
           toast.success("Login was successful!");
-        } catch (signInError) {
-          await api().post(`${API_URL}/auth/register`, {
-            email,
-            firstName,
-            lastName,
-            password,
-            confirmPassword: password,
-            mobile: "",
-            isGoogleAuth: true,
-            googleId: user.id,
-          });
-
-          const response = await api().post(`${API_URL}/auth/sign-in`, {
-            email,
-            password,
-            isGoogleAuth: true,
-            googleData: {
-              name: fullName,
-              googleId: user.id,
-              photoURL: user.user_metadata?.avatar_url ?? null,
-            },
-          });
-
-          const authData = {
-            ...response.data.data,
-            timestamp: Date.now(),
-          };
-          queryClient.setQueryData(["auth"], response.data.data);
-          localStorage.setItem("studentAuth", JSON.stringify(authData));
-          toast.success("Login was successful!");
+        } catch (signInError: any) {
+          // If sign-in fails and we are not in signup mode, do NOT auto-register.
+          // Throw an error so the user is informed they need to sign up first.
+          const errorMsg = signInError?.response?.data?.message || "Account not found. Please sign up first.";
+          throw new Error(errorMsg);
         }
 
         if (isMounted) {
