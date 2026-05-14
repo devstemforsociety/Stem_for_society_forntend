@@ -760,9 +760,25 @@ const AcademyDetail = () => {
         <div className="bg-white rounded-2xl p-4 md:p-6 lg:p-8 mb-8 md:mb-12 shadow-sm">
           <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">Terms & Conditions</h3>
           <ul className="space-y-2 text-sm md:text-base text-gray-600 mb-4">
-            <li>• Class link shared on session day (join early for tech checks)</li>
-            <li>• Fee is non-refundable and non-transferable</li>
-            <li>• Active internet connection required</li>
+            {course.type === 'OFFLINE' ? (
+              <>
+                <li>• Venue details will be shared prior to the session</li>
+                <li>• Fee is non-refundable and non-transferable</li>
+                <li>• Please arrive 15 minutes early for registration</li>
+              </>
+            ) : course.type === 'HYBRID' ? (
+              <>
+                <li>• Class link and venue details will be shared prior to the session</li>
+                <li>• Fee is non-refundable and non-transferable</li>
+                <li>• Active internet connection required for online participants</li>
+              </>
+            ) : (
+              <>
+                <li>• Class link shared on session day (join early for tech checks)</li>
+                <li>• Fee is non-refundable and non-transferable</li>
+                <li>• Active internet connection required</li>
+              </>
+            )}
           </ul>
           <p className="text-xs md:text-sm text-gray-500">
             By continuing, you agree to share your info with STEM for Society & the course provider, as per data protection laws.
