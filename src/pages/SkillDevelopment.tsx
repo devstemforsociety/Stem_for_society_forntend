@@ -16,10 +16,9 @@ import GridBackground from "@/components1/GridBackground";
 import FinishingSchoolCard from "@/components1/FinishingSchoolCard";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import dayjs from "dayjs";
 import { api } from "@/lib/api";
 import { GenericError, GenericResponse } from "@/lib/types";
-import { formatDate } from "@/lib/utils";
+import { calculateDuration, formatDate } from "@/lib/utils";
 import Loading from "@/components/Loading";
 import Errorbox from "@/components/Errorbox";
 
@@ -164,22 +163,6 @@ const SkillDevelopment = () => {
       .filter((category): category is string => !!category);
     return Array.from(new Set(categories)).sort();
   }, [courses]);
-
-  // Calculate duration from start and end dates
-   const calculateDuration = (startDate: string, endDate: string) => {
-    const start = dayjs(startDate);
-    const end = dayjs(endDate);
-    const weeks = end.diff(start, 'week');
-    const months = end.diff(start, 'month');
-    const days =  end.diff(start,"day");    
-    if (months > 0) {
-      return `${months} month${months > 1 ? 's' : ''}`;
-    }
-    else if(weeks > 0) {
-      return `${weeks} week${weeks > 1 ? 's' : ''}`;
-    }
-      return `${days} day${days > 1 ? 's' : ''}`;
-};
 
   if (isLoading) return <Loading />;
   if (error) return <Errorbox message={error.message} />;

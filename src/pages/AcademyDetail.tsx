@@ -24,6 +24,8 @@ import {
   RazorpayOrderOptions,
 } from "@/lib/types";
 import {
+  calculateDurationForEmail,
+  calculateDuration,
   formatDate,
   mutationErrorHandler,
   initializeRazorpay,
@@ -226,26 +228,6 @@ const AcademyDetail = () => {
     }
   }, [userData]);
 
-  // Calculate duration from start and end dates
-  const calculateDuration = () => {
-    if (!course?.startDate || !course?.endDate) return "6 months";
-    const start = dayjs(course.startDate);
-    const end = dayjs(course.endDate);
-
-    // Get exact floating-point days and round up. Ensure a minimum of 1 day.
-    const days = Math.max(1, Math.ceil(end.diff(start, "day", true)));
-
-    if (days >= 30) {
-      const months = Math.floor(days / 30);
-      return `${months} month${months > 1 ? "s" : ""}`;
-    } else if (days >= 7) {
-      const weeks = Math.floor(days / 7);
-      return `${weeks} week${weeks > 1 ? "s" : ""}`;
-    }
-
-    return `${days} day${days > 1 ? "s" : ""}`;
-  };
-
   // Get mode text
   const getModeText = () => {
     if (!course?.type) return "Hybrid";
@@ -269,30 +251,6 @@ const AcademyDetail = () => {
         (transaction) => transaction.status === "success",
       ),
     );
-  };
-
-  // Generate duration string for email
-  const generateDuration = (start: string, end: string) => {
-    const startDate = new Date(formatDate(start));
-    const endDate = new Date(formatDate(end));
-    const timeDiff = endDate.getTime() - startDate.getTime();
-    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-    let duration: string;
-    if (daysDiff === 1) {
-      duration = "one day";
-    } else if (daysDiff <= 7) {
-      duration = `${daysDiff} days`;
-    } else if (daysDiff <= 14) {
-      duration =
-        daysDiff === 7 ? "one week" : `${Math.ceil(daysDiff / 7)} weeks`;
-    } else if (daysDiff <= 30) {
-      duration = `${Math.ceil(daysDiff / 7)} weeks`;
-    } else {
-      const months = Math.ceil(daysDiff / 30);
-      duration = months === 1 ? "one month" : `${months} months`;
-    }
-    return duration;
   };
 
   // Default values for incase of missing data
@@ -379,7 +337,7 @@ const AcademyDetail = () => {
                 amount: Number(order.amount),
                 currency: "INR",
                 paymentId: response.razorpay_payment_id,
-                courseDuration: generateDuration(
+                courseDuration: calculateDurationForEmail(
                   course?.startDate || "",
                   course?.endDate || "",
                 ),
@@ -939,7 +897,7 @@ const AcademyDetail = () => {
               Duration
             </h4>
             <p className="text-gray-600 text-xs md:text-sm">
-              {calculateDuration()}
+              {calculateDuration(course?.startDate, course?.endDate, "6 months")}
             </p>
           </div>
           <div className="bg-white rounded-2xl p-4 md:p-6 text-center shadow-sm">

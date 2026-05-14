@@ -54,6 +54,52 @@ export function formatDate(date: string | Date | null) {
   return !date ? "No date" : dayjs(date).format("ddd, DD MMM YYYY");
 }
 
+export function calculateDuration(
+  startDate?: string | Date | null,
+  endDate?: string | Date | null,
+  fallback = "6 months",
+) {
+  if (!startDate || !endDate) return fallback;
+
+  const start = dayjs(startDate);
+  const end = dayjs(endDate);
+
+  // Round up to avoid 0-day durations for same-day sessions.
+  const days = Math.max(1, Math.ceil(end.diff(start, "day", true)));
+
+  if (days >= 30) {
+    const months = Math.floor(days / 30);
+    return `${months} month${months > 1 ? "s" : ""}`;
+  }
+
+  if (days >= 7) {
+    const weeks = Math.floor(days / 7);
+    return `${weeks} week${weeks > 1 ? "s" : ""}`;
+  }
+
+  return `${days} day${days > 1 ? "s" : ""}`;
+}
+
+export function calculateDurationForEmail(
+  startDate?: string | Date | null,
+  endDate?: string | Date | null,
+  fallback = "six months",
+) {
+  if (!startDate || !endDate) return fallback;
+
+  const start = dayjs(startDate);
+  const end = dayjs(endDate);
+  const days = Math.max(1, Math.ceil(end.diff(start, "day", true)));
+
+  if (days === 1) return "one day";
+  if (days <= 7) return `${days} days`;
+  if (days <= 14) return days === 7 ? "one week" : `${Math.ceil(days / 7)} weeks`;
+  if (days <= 30) return `${Math.ceil(days / 7)} weeks`;
+
+  const months = Math.ceil(days / 30);
+  return months === 1 ? "one month" : `${months} months`;
+}
+
 export function initializeRazorpay() {
   return new Promise((resolve) => {
     const script = document.createElement("script");

@@ -9,7 +9,13 @@ import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { api, queryClient } from "@/lib/api";
 import { GenericError, GenericResponse, RazorpayOrderOptions } from "@/lib/types";
-import { formatDate, mutationErrorHandler, initializeRazorpay } from "@/lib/utils";
+import {
+  calculateDuration,
+  calculateDurationForEmail,
+  formatDate,
+  mutationErrorHandler,
+  initializeRazorpay,
+} from "@/lib/utils";
 import Loading from "@/components/Loading";
 import Errorbox from "@/components/Errorbox";
 import { useUser } from "@/lib/hooks";
@@ -84,15 +90,6 @@ const CourseDetails = () => {
   
   const training = trainingData?.data;
 
-  // Calculate course duration in weeks
-  const calculateDuration = () => {
-    if (!training?.startDate || !training?.endDate) return "6 weeks";
-    const start = new Date(training.startDate);
-    const end = new Date(training.endDate);
-    const diffTime = Math.abs(end.getTime() - start.getTime());
-    const diffWeeks = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 7));
-    return `${diffWeeks} weeks`;
-  };
   // Rating and Feedback Component
 function RatingAndFeedback({
   id,
@@ -163,28 +160,6 @@ function RatingAndFeedback({
     );
   };
 
-  // Generate duration string for email
-  const generateDuration = (start: string, end: string) => {
-    const startDate = new Date(formatDate(start));
-    const endDate = new Date(formatDate(end));
-    const timeDiff = endDate.getTime() - startDate.getTime();
-    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-    let duration: string;
-    if (daysDiff === 1) {
-      duration = "one day";
-    } else if (daysDiff <= 7) {
-      duration = `${daysDiff} days`;
-    } else if (daysDiff <= 14) {
-      duration = daysDiff === 7 ? "one week" : `${Math.ceil(daysDiff / 7)} weeks`;
-    } else if (daysDiff <= 30) {
-      duration = `${Math.ceil(daysDiff / 7)} weeks`;
-    } else {
-      const months = Math.ceil(daysDiff / 30);
-      duration = months === 1 ? "one month" : `${months} months`;
-    }
-    return duration;
-  };
 
   // Handle payment with full error handling and email
   const handlePayment = useCallback(async () => {
@@ -242,7 +217,10 @@ function RatingAndFeedback({
                 amount: Number(order.amount),
                 currency: 'INR',
                 paymentId: response.razorpay_payment_id,
-                courseDuration: generateDuration(training?.startDate || '', training?.endDate || ''),
+                courseDuration: calculateDurationForEmail(
+                  training?.startDate || "",
+                  training?.endDate || "",
+                ),
                 startDate: formatDate(training?.startDate || ''),
                 phoneNumber: userData?.user?.mobile
               });
@@ -513,7 +491,9 @@ function RatingAndFeedback({
             <div className="bg-gray-50 rounded-2xl p-4 md:p-6 space-y-3">
               <div>
                 <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Duration</p>
-                <p className="text-sm md:text-base font-semibold text-gray-900 mt-1">{calculateDuration()}</p>
+                <p className="text-sm md:text-base font-semibold text-gray-900 mt-1">
+                  {calculateDuration(training?.startDate, training?.endDate, "6 weeks")}
+                </p>
               </div>
               <div className="border-t border-gray-200 pt-3">
                 <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Mode</p>
