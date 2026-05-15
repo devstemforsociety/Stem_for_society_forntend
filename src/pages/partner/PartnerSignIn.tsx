@@ -1,7 +1,7 @@
 import { Button, Paper, Text, TextInput, Title } from "@mantine/core";
 import { Lock, Mail } from "lucide-react";
 import { useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { usePartner } from "../../lib/hooks";
 
 type PartnerSignInForm = {
@@ -12,6 +12,9 @@ type PartnerSignInForm = {
 export default function PartnerSignIn() {
   const { user } = usePartner();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from =
+    (location.state as { from?: string } | null)?.from || "/partner";
 
   const [formData, setFormData] = useState<PartnerSignInForm>({
     email: "",
@@ -19,7 +22,7 @@ export default function PartnerSignIn() {
   });
 
   const { signIn, isSigningIn } = usePartner({
-    extraOnSuccess: () => navigate("/partner"),
+    extraOnSuccess: () => navigate(from, { replace: true }),
   });
 
   const handleSubmit = () => {
@@ -34,7 +37,7 @@ export default function PartnerSignIn() {
     }));
   };
 
-  if (user) return <Navigate to={"/partner"} />;
+  if (user) return <Navigate to={from} replace />;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center p-4">

@@ -1,6 +1,6 @@
 import { Button, PasswordInput, Text, TextInput, Title } from "@mantine/core";
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAdmin } from "../../lib/hooks";
 
 type AdminSignInForm = {
@@ -11,6 +11,9 @@ type AdminSignInForm = {
 export default function AdminSignIn() {
   const { user } = useAdmin();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from =
+    (location.state as { from?: string } | null)?.from || "/admin";
 
   const [formData, setFormData] = useState<AdminSignInForm>({
     email: "",
@@ -18,7 +21,7 @@ export default function AdminSignIn() {
   });
 
   const { signIn, isSigningIn } = useAdmin({
-    extraOnSuccess: () => navigate("/admin"),
+    extraOnSuccess: () => navigate(from, { replace: true }),
   });
 
   const handleSubmit = () => {
@@ -33,7 +36,7 @@ export default function AdminSignIn() {
     }));
   };
 
-  if (user) return <Navigate to={"/admin"} />;
+  if (user) return <Navigate to={from} replace />;
 
   return (
     <div className="min-h-screen flex items-center justify-center w-full bg-gradient-to-br from-gray-50 to-gray-100 p-4">

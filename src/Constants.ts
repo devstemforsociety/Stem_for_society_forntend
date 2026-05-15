@@ -1,7 +1,7 @@
 export const API_URL = true
   ? // ? "https://stem-for-society-api-lnj3a.ondigitalocean.app"
     //"https://stem-society-api.onrender.com"
-    "https://sfs-mine-backend-withoutrediserror.onrender.com"
+    import.meta.env.VITE_BACKEND_URL ?? "http://localhost:3001"
   : "http://localhost:3001";
 // export const API_URL = "https://stem-for-society-api-lnj3a.ondigitalocean.app";
 

@@ -39,15 +39,20 @@ const PartnerNavLinks = [
 ];
 
 export default function PartnerLayout() {
-  const { signOut, user } = usePartner();
+  const { signOut, user, isLoading } = usePartner();
   const navigate = useNavigate();
   const location = useLocation();
-  const shouldRedirect = location.pathname.endsWith("/signup");
+  const isAuthRoute =
+    location.pathname === "/partner/signin" ||
+    location.pathname === "/partner/signup";
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (!user && !shouldRedirect) {
-      navigate("/partner-signin");
+    if (!isLoading && !user && !isAuthRoute) {
+      navigate("/partner/signin", {
+        replace: true,
+        state: { from: location.pathname },
+      });
       return;
     }
 
@@ -56,13 +61,16 @@ export default function PartnerLayout() {
       navigate("/partner");
       return;
     }
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [user]);
+  }, [user, isLoading, isAuthRoute, navigate, location.pathname]);
 
   const handleLogout = () => {
     signOut();
-    navigate("/partner-signin");
+    navigate("/partner/signin");
   };
+
+  if (isAuthRoute) {
+    return <Outlet />;
+  }
 
   if (!user) {
     return null;

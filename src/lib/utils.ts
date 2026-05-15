@@ -46,8 +46,20 @@ export function mutationErrorHandler(
     });
     return;
   }
-  
-  toast.error(errorMessage || error.message || "Unknown error");
+
+  const normalizedMessage = (errorMessage || error.message || "").trim();
+
+  if (normalizedMessage.toLowerCase() === "invalid credentials") {
+    toast.error("Invalid credentials.");
+    return;
+  }
+
+  if (normalizedMessage.toLowerCase() === "user not found") {
+    toast.error("User not Found! Please sign up first");
+    return;
+  }
+
+  toast.error(normalizedMessage || "Unknown error");
 }
 
 export function formatDate(date: string | Date | null) {

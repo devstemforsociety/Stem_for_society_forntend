@@ -136,8 +136,23 @@ const AuthCallback = () => {
         } catch (signInError: any) {
           // If sign-in fails and we are not in signup mode, do NOT auto-register.
           // Throw an error so the user is informed they need to sign up first.
-          const errorMsg = signInError?.response?.data?.message || "Account not found. Please sign up first.";
-          throw new Error(errorMsg);
+          const rawError =
+            signInError?.response?.data?.error ||
+            signInError?.response?.data?.message ||
+            "";
+          const normalizedError = rawError.trim().toLowerCase();
+
+          if (normalizedError === "invalid credentials") {
+            throw new Error("Invalid credentials.");
+          }
+
+          if (normalizedError === "user not found") {
+            throw new Error("User not Found! Please sign up first");
+          }
+
+          throw new Error(
+            rawError || "User not Found! Please sign up first",
+          );
         }
 
         if (isMounted) {
