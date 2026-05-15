@@ -6,7 +6,7 @@ import { useCallback, useState } from "react";
 import { FaLinkedin } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { MdShare } from "react-icons/md";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useShare } from "@/hooks/useShare";
 import { SharePopup } from "@/components1/ui/SharePopup";
@@ -48,6 +48,10 @@ type FeedbackResponse = {
 
 function useEnroll(id?: string) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const loginUrl = `/login?returnTo=${encodeURIComponent(
+    `${location.pathname}${location.search}${location.hash}`
+  )}`;
   return useMutation<
     GenericResponse<CreatePaymentResponse>,
     AxiosError<GenericError>
@@ -57,12 +61,16 @@ function useEnroll(id?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["trainings"] });
     },
-    onError: (err) => mutationErrorHandler(err, navigate, "/login"),
+    onError: (err) => mutationErrorHandler(err, navigate, loginUrl),
   });
 }
 
 function useSubmitFeedback(id: string) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const loginUrl = `/login?returnTo=${encodeURIComponent(
+    `${location.pathname}${location.search}${location.hash}`
+  )}`;
   return useMutation<
     GenericResponse,
     AxiosError<GenericError>,
@@ -79,17 +87,21 @@ function useSubmitFeedback(id: string) {
       queryClient.invalidateQueries({ queryKey: ["trainings", id] });
       toast.success(data.message);
     },
-    onError: (err) => mutationErrorHandler(err, navigate, "/login"),
+    onError: (err) => mutationErrorHandler(err, navigate, loginUrl),
   });
 }
 
 function TrainingSpotlight() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const routerLocation = useLocation();
   const { isShowing, handleShare } = useShare();
   const { data, isLoading, error } = useTraining(id);
   const { user } = useUser();
   const { mutateAsync, isPending } = useEnroll(id);
+  const loginUrl = `/login?returnTo=${encodeURIComponent(
+    `${routerLocation.pathname}${routerLocation.search}${routerLocation.hash}`
+  )}`;
 
   const handlePayment = useCallback(async () => {
     try {
@@ -282,7 +294,7 @@ function TrainingSpotlight() {
             </span>
             <div className="">
               {!user ? (
-                <Link to="/login">
+                <Link to={loginUrl}>
                   <Button
                     radius={999}
                     variant="filled"

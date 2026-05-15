@@ -52,17 +52,19 @@ const AdminNavLinks = [
 ];
 
 export default function AdminLayout() {
-  const { user, signOut } = useAdmin();
+  const { user, isLoading, signOut } = useAdmin();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (!user) {
-      navigate("/admin/signin");
+    if (!isLoading && !user) {
+      navigate("/admin/signin", {
+        replace: true,
+        state: { from: location.pathname },
+      });
     }
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, [user]);
+  }, [user, isLoading, navigate, location.pathname]);
 
   const handleLogout = () => {
     signOut();

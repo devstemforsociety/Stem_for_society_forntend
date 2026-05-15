@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components1/ui/button";
 import { ArrowLeft, CheckCircle, Award, ExternalLink, Calendar, MapPin, User } from "lucide-react";
 import Header from "@/components1/Header";
@@ -45,6 +45,10 @@ type CreatePaymentResponse = {
 
 function useEnroll(id?: string) {
   const nav = useNavigate();
+  const location = useLocation();
+  const loginUrl = `/login?returnTo=${encodeURIComponent(
+    `${location.pathname}${location.search}${location.hash}`
+  )}`;
   return useMutation<GenericResponse<CreatePaymentResponse>, AxiosError<GenericError>>({
     mutationFn: async () => {
       return (await api().post("/payments/create", { trainingId: id })).data;
@@ -53,13 +57,17 @@ function useEnroll(id?: string) {
       queryClient.invalidateQueries({ queryKey: ["trainings"] });
       queryClient.invalidateQueries({ queryKey: ["trainings", id] });
     },
-    onError: (err) => mutationErrorHandler(err, nav, "/login"),
+    onError: (err) => mutationErrorHandler(err, nav, loginUrl),
   });
 }
 
 // Feedback submission hook
 function useSubmitFeedback(id: string) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const loginUrl = `/login?returnTo=${encodeURIComponent(
+    `${location.pathname}${location.search}${location.hash}`
+  )}`;
   return useMutation<
     GenericResponse,
     AxiosError<GenericError>,
@@ -76,19 +84,23 @@ function useSubmitFeedback(id: string) {
       queryClient.invalidateQueries({ queryKey: ["trainings", id] });
       toast.success(data.message);
     },
-    onError: (err) => mutationErrorHandler(err, navigate, "/login"),
+    onError: (err) => mutationErrorHandler(err, navigate, loginUrl),
   });
 }
 
 const CourseDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user: userData } = useUser();
   
   const { data: trainingData, isLoading, error } = useTraining(id);
   const { mutateAsync, isPending } = useEnroll(id);
   
   const training = trainingData?.data;
+  const loginUrl = `/login?returnTo=${encodeURIComponent(
+    `${location.pathname}${location.search}${location.hash}`
+  )}`;
 
   // Rating and Feedback Component
 function RatingAndFeedback({
@@ -110,6 +122,18 @@ function RatingAndFeedback({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!rating || rating < 1 || rating > 5) {
+      toast.error("Please select a rating between 1 and 5 stars.");
+      return;
+    }
+    if (!feedback || feedback.trim().length < 3) {
+      toast.error("Feedback must be at least 3 characters.");
+      return;
+    }
+    if (feedback.trim().length > 200) {
+      toast.error("Feedback cannot exceed 200 characters.");
+      return;
+    }
     mutation.mutate({ rating, feedback });
   };
 
@@ -271,7 +295,7 @@ function RatingAndFeedback({
   // Handle registration
   const handleRegister = async () => {
     if (!userData) {
-      navigate("/login");
+      navigate(loginUrl);
       return;
     }
 
@@ -417,7 +441,7 @@ function RatingAndFeedback({
               <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm text-center sticky top-4 lg:top-6">
                 <p className="text-gray-600 mb-4 text-sm md:text-base">Sign in to enroll in this course</p>
                 <Button
-                  onClick={() => navigate("/login")}
+                  onClick={() => navigate(loginUrl)}
                   className="w-full bg-[#0D9488] text-white hover:bg-teal-600 rounded-xl h-10 md:h-12 font-semibold text-sm md:text-base"
                 >
                   Sign In

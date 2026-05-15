@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useUser } from "../lib/hooks";
 import { queryClient } from "../lib/api";
@@ -13,6 +13,7 @@ interface LoginFormData {
 }
 
 const Login = () => {
+  const location = useLocation();
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -40,7 +41,13 @@ const Login = () => {
     }
   };
 
-  if (user) return <Navigate to={"/"} />;
+  const returnToParam = new URLSearchParams(location.search).get("returnTo");
+  const safeReturnTo =
+    returnToParam && returnToParam.startsWith("/") && !returnToParam.startsWith("//")
+      ? returnToParam
+      : "/";
+
+  if (user) return <Navigate to={safeReturnTo} replace />;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

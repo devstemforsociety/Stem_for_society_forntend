@@ -1,7 +1,7 @@
 import { Avatar, Menu } from "@mantine/core";
 import { ChevronDown, CircleUserIcon, Menu as MenuIcon, X } from "lucide-react";
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import logo from "/logo-01.png";
 import { useUser } from "../lib/hooks";
 import { parseAsBoolean, useQueryState } from "nuqs";
@@ -58,10 +58,14 @@ const data: ((BaseMenuItem & { submenus: BaseMenuItem[] }) | BaseMenuItem)[] = [
 function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, signOut } = useUser();
+  const routerLocation = useLocation();
   const [filterByMe, setFilterByMe] = useQueryState<boolean>(
     "me",
     parseAsBoolean,
   );
+  const loginUrl = `/login?returnTo=${encodeURIComponent(
+    `${routerLocation.pathname}${routerLocation.search}${routerLocation.hash}`
+  )}`;
 
   const items = data.map((item) =>
     "submenus" in item ? (
@@ -169,7 +173,7 @@ function Header() {
               Partner With us
             </Link>
             <Link
-              to="/login"
+              to={loginUrl}
               className="font-semibold rounded-full text-center px-5 py-2 text-white bg-blue-500  hover:bg-blue-400 transition-all"
             >
               Login
@@ -199,7 +203,7 @@ function Header() {
               </>
             ) : (
               <Link
-                to="/login"
+                to={loginUrl}
                 className="font-semibold rounded-full text-center px-5 py-2 text-white bg-blue-500  hover:bg-blue-400 transition-all"
               >
                 Login
