@@ -21,7 +21,7 @@ export function mutationErrorHandler(
   path?: string,
 ) {
   console.error("mutation error:", error);
-  
+
   const errorObject =
     typeof error.response?.data !== "string" && error.response?.data;
   const errorMessage =
@@ -31,7 +31,7 @@ export function mutationErrorHandler(
 
   // Handle 401 errors by redirecting to login
   if (error.status === 401) {
-    toast.error('Authentication required');
+    toast.error("Authentication required");
     if (navigate) {
       navigate(path ?? "/");
     }
@@ -105,7 +105,8 @@ export function calculateDurationForEmail(
 
   if (days === 1) return "one day";
   if (days <= 7) return `${days} days`;
-  if (days <= 14) return days === 7 ? "one week" : `${Math.ceil(days / 7)} weeks`;
+  if (days <= 14)
+    return days === 7 ? "one week" : `${Math.ceil(days / 7)} weeks`;
   if (days <= 30) return `${Math.ceil(days / 7)} weeks`;
 
   const months = Math.ceil(days / 30);

@@ -122,6 +122,18 @@ function RatingAndFeedback({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!rating || rating < 1 || rating > 5) {
+      toast.error("Please select a rating between 1 and 5 stars.");
+      return;
+    }
+    if (!feedback || feedback.trim().length < 3) {
+      toast.error("Feedback must be at least 3 characters.");
+      return;
+    }
+    if (feedback.trim().length > 200) {
+      toast.error("Feedback cannot exceed 200 characters.");
+      return;
+    }
     mutation.mutate({ rating, feedback });
   };
 
