@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components1/ui/button";
 import { Input } from "@/components1/ui/input";
 import {
@@ -106,6 +106,10 @@ type CreatePaymentResponse = {
 
 function useEnroll(id?: string) {
   const nav = useNavigate();
+  const location = useLocation();
+  const loginUrl = `/login?returnTo=${encodeURIComponent(
+    `${location.pathname}${location.search}${location.hash}`
+  )}`;
   return useMutation<
     GenericResponse<CreatePaymentResponse>,
     AxiosError<GenericError>
@@ -117,13 +121,17 @@ function useEnroll(id?: string) {
       queryClient.invalidateQueries({ queryKey: ["trainings"] });
       queryClient.invalidateQueries({ queryKey: ["trainings", id] });
     },
-    onError: (err) => mutationErrorHandler(err, nav, "/login"),
+    onError: (err) => mutationErrorHandler(err, nav, loginUrl),
   });
 }
 
 // Feedback submission hook
 function useSubmitFeedback(id: string) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const loginUrl = `/login?returnTo=${encodeURIComponent(
+    `${location.pathname}${location.search}${location.hash}`
+  )}`;
   return useMutation<
     GenericResponse,
     AxiosError<GenericError>,
@@ -145,7 +153,7 @@ function useSubmitFeedback(id: string) {
 
       // Only redirect to login if it's an auth error
       if (err.status === 401) {
-        mutationErrorHandler(err, navigate, "/login");
+        mutationErrorHandler(err, navigate, loginUrl);
       }
     },
   });
@@ -202,11 +210,16 @@ function RatingAndFeedback({
 const AcademyDetail = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user: userData } = useUser();
   const { data: trainingData, isLoading, error } = useTraining(courseId);
   const { mutateAsync, isPending } = useEnroll(courseId);
 
   const course = trainingData?.data;
+  const returnTo = encodeURIComponent(
+    `${location.pathname}${location.search}${location.hash}`
+  );
+  const loginUrl = `/login?returnTo=${returnTo}`;
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -407,7 +420,7 @@ const AcademyDetail = () => {
     // Check if user is logged in
     if (!userData) {
       toast.error("Please login to continue with enrollment");
-      navigate("/login");
+      navigate(loginUrl);
       return;
     }
 
@@ -624,7 +637,7 @@ const AcademyDetail = () => {
                   </div>
 
                   <Button
-                    onClick={() => navigate("/login")}
+                    onClick={() => navigate(loginUrl)}
                     className="w-full h-10 md:h-12 bg-white text-[#0D9488] hover:bg-gray-100 rounded-xl font-semibold md:font-bold text-sm md:text-base shadow-lg"
                   >
                     Login to Continue

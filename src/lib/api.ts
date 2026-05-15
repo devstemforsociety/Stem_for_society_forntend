@@ -25,6 +25,9 @@ const api = (queryKeyName: string = "auth") => {
           token = parsed.token;
         } catch {
           // Invalid JSON in localStorage
+          localStorage.removeItem("studentAuth");
+          token = null;
+          
         }
       }
     }
@@ -43,8 +46,11 @@ const api = (queryKeyName: string = "auth") => {
         queryClient.clear();
         localStorage.clear();
         
-        // Force redirect to login
-        window.location.href = "/login";
+        // Force redirect to login with return path
+        const returnTo = encodeURIComponent(
+          `${window.location.pathname}${window.location.search}${window.location.hash}`
+        );
+        window.location.href = `/login?returnTo=${returnTo}`;
       }
       return Promise.reject(error);
     }

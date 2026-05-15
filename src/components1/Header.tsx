@@ -9,7 +9,7 @@ import {
   MenubarTrigger 
 } from "@/components1/ui/menubar";
 import { ChevronDown, CircleUserIcon, Menu , X } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "../lib/hooks";
 import { parseAsBoolean, useQueryState } from "nuqs";
 
@@ -17,10 +17,14 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { user, signOut } = useUser();
+  const routerLocation = useLocation();
   const [filterByMe, setFilterByMe] = useQueryState<boolean>(
     "me",
     parseAsBoolean,
   );
+  const loginUrl = `/login?returnTo=${encodeURIComponent(
+    `${routerLocation.pathname}${routerLocation.search}${routerLocation.hash}`
+  )}`;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -207,7 +211,7 @@ const Header = () => {
                     Partner with us
                   </Button>
                 </Link>
-                <Link to="/login">
+                <Link to={loginUrl}>
                   <Button className="bg-[#0389FF] hover:bg-[#0389FF]/90 text-white rounded px-6 py-3 font-medium shadow-sm transition-all duration-300">
                     LOGIN
                   </Button>
@@ -307,7 +311,7 @@ const Header = () => {
           Logout
         </button>
                 ):(
-                  <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                  <Link to={loginUrl} onClick={() => setIsMenuOpen(false)}>
                   <Button className="w-full bg-[#0389FF] hover:bg-[#0389FF]/90 text-white rounded-full">
                     LOGIN
                   </Button>
