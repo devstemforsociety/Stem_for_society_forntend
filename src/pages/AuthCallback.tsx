@@ -1,3 +1,4 @@
+import { toastError } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -160,7 +161,7 @@ const AuthCallback = () => {
         }
       } catch (error: any) {
         console.error("Supabase OAuth callback failed:", error);
-        toast.error(error.message || "Authentication failed");
+        toastError(error, "Authentication failed");
         if (isMounted) {
           navigate("/login");
         }
@@ -240,7 +241,7 @@ const AuthCallback = () => {
       navigate("/");
     } catch (error: any) {
       console.error("Supabase OAuth phone verification failed:", error);
-      toast.error(error.message || "Authentication failed");
+      toastError(error, "Authentication failed");
       setShowPhoneVerification(false);
       navigate("/login");
     }

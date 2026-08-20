@@ -1,3 +1,4 @@
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import {
   Alert,
   Badge,
@@ -322,7 +323,7 @@ export default function PartnerCourseDetails() {
                           {l.content && (
                             <div
                               className="ql-snow text-sm text-gray-700 mb-3"
-                              dangerouslySetInnerHTML={{ __html: l.content }}
+                              dangerouslySetInnerHTML={{ __html: sanitizeHtml(l.content) }}
                             ></div>
                           )}
                           <div className="flex flex-col gap-2 text-sm text-gray-600">

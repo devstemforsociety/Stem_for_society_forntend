@@ -2,9 +2,11 @@ import { AxiosError } from "axios";
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { GenericError } from "./types";
-import { toast } from "react-toastify";
+import { toast, type ToastOptions } from "react-toastify";
 import { NavigateFunction } from "react-router-dom";
 import dayjs from "dayjs";
+import { type AppError, messageForViewer, normalizeError } from "./errors";
+import { isPrivilegedViewer } from "./viewer";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -14,52 +16,93 @@ export async function sleep(time: number) {
   return await new Promise((res) => setTimeout(res, time));
 }
 
-// Simplified error handler - no session management
+/**
+ * Show a failure as a toast, classified through the error taxonomy.
+ *
+ * Use this instead of `toast.error(someError.message)`: a raw message can be a
+ * runtime bug ("Cannot read properties of undefined") or leak internals, and it
+ * cannot tell a visitor that the server is simply unreachable.
+ *
+ * `fallback` is only used when the error carries no usable message of its own -
+ * a classified failure (offline, timeout, rate limited) always wins, because
+ * its copy is more specific than anything a call site can know in advance.
+ */
+export function toastError(
+  cause: unknown,
+  fallback?: string,
+  options?: ToastOptions,
+): AppError {
+  const appError = normalizeError(cause);
+
+  const base =
+    appError.isGeneric && appError.kind === "unknown" && fallback
+      ? fallback
+      : appError.userMessage;
+
+  const message = isPrivilegedViewer()
+    ? `${base} - ${appError.adminHint} (ref ${appError.correlationId})`
+    : base;
+
+  toast.error(message, options);
+  return appError;
+}
+
+/**
+ * The app-wide toast handler for a failed mutation.
+ *
+ * All message selection is delegated to the error taxonomy, so a client sees
+ * plain language while an admin also gets the resolution hint and reference id.
+ * Reporting to observability already happened in the mutation cache, so this
+ * function is purely presentational.
+ */
 export function mutationErrorHandler(
   error: AxiosError<GenericError>,
   navigate?: NavigateFunction,
   path?: string,
 ) {
-  console.error("mutation error:", error);
+  const appError = normalizeError(error);
 
-  const errorObject =
-    typeof error.response?.data !== "string" && error.response?.data;
-  const errorMessage =
-    errorObject && "error" in errorObject && errorObject.error;
-  const validationError =
-    errorObject && "errors" in errorObject && errorObject.errors;
+  // Field-level problems are most useful listed one by one. Deduplicated:
+  // a schema with two rules on the same field (min length + pattern, say) can
+  // report the same message twice, which would stack identical toasts.
+  if (appError.fieldErrors?.length) {
+    const seen = new Set<string>();
 
-  // Handle 401 errors by redirecting to login
-  if (error.status === 401) {
-    toast.error("Authentication required");
+    appError.fieldErrors.forEach((field) => {
+      const label = field.path
+        ? `${field.path.charAt(0).toUpperCase()}${field.path.slice(1)}: `
+        : "";
+      const message = label + field.message;
+
+      if (seen.has(message)) return;
+      seen.add(message);
+      toast.error(message);
+    });
+    return;
+  }
+
+  if (appError.kind === "unauthorized") {
+    toast.error(appError.userMessage);
     if (navigate) {
       navigate(path ?? "/");
     }
     return;
   }
 
-  if (validationError) {
-    validationError.forEach((err) => {
-      toast.error(
-        err.path[0].toUpperCase() + err.path.slice(1) + ": " + err.message,
-      );
-    });
-    return;
-  }
+  // Friendlier phrasing for the two most common sign-in rejections.
+  const normalizedMessage = appError.userMessage.trim().toLowerCase();
 
-  const normalizedMessage = (errorMessage || error.message || "").trim();
-
-  if (normalizedMessage.toLowerCase() === "invalid credentials") {
+  if (normalizedMessage === "invalid credentials") {
     toast.error("Invalid credentials.");
     return;
   }
 
-  if (normalizedMessage.toLowerCase() === "user not found") {
+  if (normalizedMessage === "user not found") {
     toast.error("User not Found! Please sign up first");
     return;
   }
 
-  toast.error(normalizedMessage || "Unknown error");
+  toast.error(messageForViewer(appError, isPrivilegedViewer()));
 }
 
 export function formatDate(date: string | Date | null) {

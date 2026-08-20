@@ -1,13 +1,71 @@
-import { QueryClient } from "@tanstack/react-query";
+import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { API_URL } from "../Constants";
+import { reportApiFailure, reportApiSuccess } from "./connectivity";
+import { newCorrelationId, normalizeError } from "./errors";
+import { reportError } from "./observability";
 import { UserAuthResponse } from "./types";
 
-export const queryClient = new QueryClient();
+/** Requests that hang forever look identical to a frozen UI. Cap them. */
+const REQUEST_TIMEOUT_MS = 20_000;
+
+const AUTH_STORAGE_KEYS = ["studentAuth", "partnerAuth", "adminAuth"] as const;
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      /**
+       * Retry only what can plausibly succeed on a second attempt. The default
+       * policy retries everything three times, which turns a 404 into four
+       * requests and delays the error the user is waiting for.
+       */
+      retry: (failureCount, error) =>
+        normalizeError(error).retryable && failureCount < 2,
+      retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 8000),
+    },
+    mutations: {
+      // Mutations are rarely idempotent - never replay them automatically.
+      retry: false,
+    },
+  },
+  /* Every failed query and mutation reaches observability, whatever the
+     call site does about it visually. */
+  queryCache: new QueryCache({
+    onError: (error, query) => {
+      reportError(error, {
+        source: "query",
+        extra: { queryKey: JSON.stringify(query.queryKey).slice(0, 200) },
+      });
+    },
+  }),
+  mutationCache: new MutationCache({
+    onError: (error, _variables, _context, mutation) => {
+      reportError(error, {
+        source: "mutation",
+        extra: {
+          mutationKey: mutation.options.mutationKey
+            ? JSON.stringify(mutation.options.mutationKey).slice(0, 200)
+            : "anonymous",
+        },
+      });
+    },
+  }),
+});
+
+function clearAuthStorage() {
+  for (const key of AUTH_STORAGE_KEYS) {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      /* storage may be unavailable; nothing else to do */
+    }
+  }
+}
 
 const api = (queryKeyName: string = "auth") => {
   const api = axios.create({
     baseURL: API_URL,
+    timeout: REQUEST_TIMEOUT_MS,
   });
 
   api.interceptors.request.use((config) => {
@@ -27,7 +85,6 @@ const api = (queryKeyName: string = "auth") => {
           // Invalid JSON in localStorage
           localStorage.removeItem("studentAuth");
           token = null;
-          
         }
       }
     }
@@ -35,25 +92,52 @@ const api = (queryKeyName: string = "auth") => {
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    /**
+     * Lets a backend log line be matched to the reference id the user sees.
+     *
+     * Off by default, and deliberately so: the API lists its allowed headers
+     * explicitly, so sending a header it has not whitelisted fails CORS
+     * preflight and breaks *every* request. Deploy the API with
+     * "X-Correlation-Id" in `allowedHeaders` first, then set
+     * VITE_SEND_CORRELATION_HEADER=true here.
+     */
+    if (import.meta.env.VITE_SEND_CORRELATION_HEADER === "true") {
+      config.headers["X-Correlation-Id"] = newCorrelationId();
+    }
+
     return config;
   });
 
   api.interceptors.response.use(
-    (response) => response,
+    (response) => {
+      reportApiSuccess();
+      return response;
+    },
     (error) => {
-      if (error.response?.status === 401) {
-        // Clear all session states
+      const appError = normalizeError(error);
+      reportApiFailure(appError.kind);
+
+      if (appError.kind === "unauthorized") {
+        // Drop only our own session keys. `localStorage.clear()` also wiped
+        // unrelated app state (drafts, preferences) on every expiry.
         queryClient.clear();
-        localStorage.clear();
-        
-        // Force redirect to login with return path
-        const returnTo = encodeURIComponent(
-          `${window.location.pathname}${window.location.search}${window.location.hash}`
-        );
-        window.location.href = `/login?returnTo=${returnTo}`;
+        clearAuthStorage();
+
+        // Redirecting while already on a sign-in screen produces a reload loop.
+        const path = window.location.pathname;
+        const onAuthScreen = /\/(login|signin|signup)/i.test(path);
+
+        if (!onAuthScreen) {
+          const returnTo = encodeURIComponent(
+            `${path}${window.location.search}${window.location.hash}`,
+          );
+          window.location.href = `/login?returnTo=${returnTo}`;
+        }
       }
+
       return Promise.reject(error);
-    }
+    },
   );
 
   return api;

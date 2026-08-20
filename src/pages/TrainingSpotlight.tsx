@@ -1,3 +1,5 @@
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
+import { clientSafeText } from "@/lib/errors";
 import { Alert, Badge, Button, Rating, Textarea } from "@mantine/core";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -133,7 +135,7 @@ function TrainingSpotlight() {
             if ("error" in response) {
               console.log("🚀 ~ handler ~ response:", response);
               // @ts-expect-error smh
-              toast.error(response.error.reason);
+              toast.error(clientSafeText(response.error.reason));
               queryClient.invalidateQueries({ queryKey: ["trainings"] });
               return;
             }
@@ -153,7 +155,7 @@ function TrainingSpotlight() {
 
       rzp.on("payment.failed", (res) => {
         console.log("Failure:", res);
-        toast.error("Payment failed! Reason:\n" + res.error.description, {
+        toast.error("Payment failed! Reason:\n" + clientSafeText(res.error.description), {
           autoClose: false,
           closeOnClick: false,
         });
@@ -357,7 +359,7 @@ function TrainingSpotlight() {
                       {l.content && (
                         <div
                           className="ql-snow"
-                          dangerouslySetInnerHTML={{ __html: l.content }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(l.content) }}
                         ></div>
                       )}
                       <div className="flex flex-col mb-2 gap-3">

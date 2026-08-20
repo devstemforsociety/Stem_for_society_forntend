@@ -1,3 +1,4 @@
+import { clientSafeText } from "@/lib/errors";
 import {
   Alert,
   Badge,
@@ -128,7 +129,7 @@ export default function PricingPage() {
       const rzp: RazorpayInstance = new Razorpay(options);
       rzp.on("payment.failed", (res) => {
         console.log("Failure:", res);
-        toast.error("Payment failed! Reason:\n" + res.error.description, {
+        toast.error("Payment failed! Reason:\n" + clientSafeText(res.error.description), {
           autoClose: false,
           closeOnClick: false,
         });

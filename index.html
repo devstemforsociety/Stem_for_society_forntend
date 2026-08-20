@@ -10,7 +10,51 @@
 </head>
 
 <body>
-	<div id="root"></div>
+	<div id="root">
+		<!--
+			Shown until React mounts (React clears this container on first render).
+			If the bundle fails to download or throws before mounting, the timer
+			below turns this into a readable message instead of a blank page.
+		-->
+		<div id="boot-fallback"
+			style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:system-ui,sans-serif;background:#f8fafc">
+			<div style="text-align:center;max-width:520px">
+				<div id="boot-spinner"
+					style="width:38px;height:38px;margin:0 auto;border:4px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:boot-spin 1s linear infinite">
+				</div>
+				<div id="boot-message" style="color:#64748b;margin-top:18px;font-size:14px">Loading…</div>
+			</div>
+		</div>
+	</div>
+
+	<noscript>
+		<div style="padding:24px;text-align:center;font-family:system-ui,sans-serif">
+			This site needs JavaScript to run. Please enable it in your browser settings and reload the page.
+		</div>
+	</noscript>
+
+	<style>
+		@keyframes boot-spin {
+			to {
+				transform: rotate(360deg);
+			}
+		}
+	</style>
+
+	<script>
+		// If the app has not mounted after 20s, the bundle is not coming.
+		setTimeout(function () {
+			var fallback = document.getElementById("boot-fallback");
+			if (!fallback) return; // React mounted and removed it.
+			var spinner = document.getElementById("boot-spinner");
+			if (spinner) spinner.style.display = "none";
+			document.getElementById("boot-message").innerHTML =
+				'<div style="color:#0f172a;font-size:18px;font-weight:600;margin-bottom:10px">We could not load the page</div>' +
+				'<div style="color:#475569;line-height:1.6;margin-bottom:18px">This is usually a connection problem. Please check your internet and reload.</div>' +
+				'<button type="button" onclick="window.location.reload()" style="border:0;border-radius:999px;background:#0f172a;color:#fff;padding:10px 22px;font-size:14px;cursor:pointer">Reload page</button>';
+		}, 20000);
+	</script>
+
 	<script type="module" src="/src/main.tsx"></script>
 </body>
 

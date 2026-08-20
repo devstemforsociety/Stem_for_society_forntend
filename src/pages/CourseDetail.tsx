@@ -1,3 +1,4 @@
+import { clientSafeText } from "@/lib/errors";
 import { useState, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components1/ui/button";
@@ -216,7 +217,7 @@ function RatingAndFeedback({
           try {
             if ("error" in response) {
               // @ts-expect-error error handling
-              toast.error(response.error.reason);
+              toast.error(clientSafeText(response.error.reason));
               queryClient.invalidateQueries({ queryKey: ["trainings"] });
               queryClient.invalidateQueries({ queryKey: ["trainings", id] });
               return;
@@ -266,7 +267,7 @@ function RatingAndFeedback({
 
       rzp.on("payment.failed", async (res: any) => {
         console.error("Payment Failure:", res);
-        toast.error("Payment failed! Reason:\n" + res.error.description, {
+        toast.error("Payment failed! Reason:\n" + clientSafeText(res.error.description), {
           autoClose: false,
           closeOnClick: false,
         });

@@ -1,3 +1,4 @@
+import RouteErrorBoundary from "../components/error/RouteErrorBoundary";
 import { Tabs } from "@mantine/core";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
@@ -38,7 +39,9 @@ export default function AdminApplicationsLayout() {
           ))}
         </Tabs.List>
         <div className="flex w-full justify-center items-center">
-          <Outlet />
+          <RouteErrorBoundary>
+            <Outlet />
+          </RouteErrorBoundary>
         </div>
       </Tabs>
     </div>

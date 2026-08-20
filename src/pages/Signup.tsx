@@ -1,3 +1,4 @@
+import { mutationErrorHandler, toastError } from "@/lib/utils";
 import { useState } from "react";
 import { Button } from "@/components1/ui/button";
 import { Input } from "@/components1/ui/input";
@@ -36,23 +37,9 @@ function useSignUp(navigate: ReturnType<typeof useNavigate>) {
       toast.success(data.message);
       navigate("/login");
     },
-    onError: (error) => {
-      console.error("Sign up failed:", error);
-      const errorObject =
-        typeof error.response?.data !== "string" && error.response?.data;
-      const errorMessage =
-        errorObject && "error" in errorObject && errorObject.error;
-      const validationError =
-        errorObject && "errors" in errorObject && errorObject.errors;
-
-      if (validationError) {
-        validationError.forEach((err) => {
-          toast.error(err.message);
-        });
-        return;
-      }
-      toast.error(errorMessage || error.message || "Server error");
-    },
+    // Was a local copy of the shared handler; it surfaced raw `error.message`
+    // (e.g. "Request failed with status code 500") straight to the visitor.
+    onError: (error) => mutationErrorHandler(error),
   });
 }
 
@@ -120,7 +107,7 @@ const Signup = () => {
       await signInWithGoogle("signup");
     } catch (error: any) {
       console.error('Google sign-up error:', error);
-      toast.error(error.message || "Failed to sign up with Google");
+      toastError(error, "Failed to sign up with Google");
       setIsGoogleSigningUp(false);
     }
   };

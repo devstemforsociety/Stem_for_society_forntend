@@ -1,3 +1,4 @@
+import { toastError } from "@/lib/utils";
 import { useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -36,7 +37,7 @@ const Login = () => {
       await signInWithGoogle("signin");
     } catch (error: any) {
       console.error('Google sign-in error:', error);
-      toast.error(error.message || "Failed to sign in with Google");
+      toastError(error, "Failed to sign in with Google");
       setIsGoogleSigningIn(false);
     }
   };

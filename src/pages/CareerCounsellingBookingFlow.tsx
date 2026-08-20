@@ -1,3 +1,4 @@
+import { clientSafeText } from "@/lib/errors";
 import React, { useCallback, useState } from 'react';
 import Header from '@/components1/Header';
 import Footer from '@/components1/Footer';
@@ -611,7 +612,7 @@ const CareerCounsellingBookingFlow = () => {
 
       rzp.on("payment.failed", (res) => {
         console.log("Failure:", res);
-        toast.error("Payment failed! Reason:\n" + res.error.description, {
+        toast.error("Payment failed! Reason:\n" + clientSafeText(res.error.description), {
           autoClose: false,
           closeOnClick: false,
         });

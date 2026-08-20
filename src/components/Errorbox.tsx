@@ -1,17 +1,26 @@
-import { ServerCrashIcon } from "lucide-react";
+import { messageError } from "../lib/errors";
+import AppErrorFallback from "./error/AppErrorFallback";
 
 type Props = {
   message: string;
+  onRetry?: () => void;
 };
 
-export default function Errorbox({ message }: Props) {
+/**
+ * Inline error panel kept at its original call signature so existing pages do
+ * not need changing. The message now passes through the safety filter, so a raw
+ * server string can no longer surface internals to a visitor.
+ *
+ * New code should prefer `components/error/ErrorState`, which takes the error
+ * object itself and can therefore classify it properly.
+ */
+export default function Errorbox({ message, onRetry }: Props) {
   return (
-    <div className="flex flex-col justify-center gap-4 h-full w-full bg-red-50 items-center p-12 rounded-md">
-      <ServerCrashIcon color="red" size={80} />
-      <div className="grid place-items-center">
-        An error occured!
-        <p className="text-red-500">{message}</p>
-      </div>
-    </div>
+    <AppErrorFallback
+      error={messageError(message)}
+      onRetry={onRetry}
+      variant="inline"
+      showHome={false}
+    />
   );
 }

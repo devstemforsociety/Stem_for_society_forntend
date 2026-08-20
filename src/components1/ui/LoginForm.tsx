@@ -1,3 +1,4 @@
+import { toastError } from "@/lib/utils";
 import { Button } from "@/components1/ui/button";
 import { Input } from "@/components1/ui/input";
 import { Link } from "react-router-dom";
@@ -35,7 +36,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
         await signInWithGoogle();
       } catch (error: any) {
         console.error("Google OAuth login failed:", error);
-        toast.error(error.message || "Failed to sign in with Google");
+        toastError(error, "Failed to sign in with Google");
       }
     }
   };

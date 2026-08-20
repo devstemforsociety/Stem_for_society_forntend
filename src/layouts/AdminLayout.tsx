@@ -1,3 +1,4 @@
+import RouteErrorBoundary from "../components/error/RouteErrorBoundary";
 import { Avatar, Button, Menu, Text } from "@mantine/core";
 import {
   BookOpen,
@@ -262,7 +263,9 @@ export default function AdminLayout() {
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto">
-          <Outlet />
+          <RouteErrorBoundary>
+            <Outlet />
+          </RouteErrorBoundary>
         </main>
       </div>
     </div>

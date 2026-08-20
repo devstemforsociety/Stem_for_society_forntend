@@ -1,3 +1,4 @@
+import { toastError } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -41,7 +42,7 @@ export function useHybridAuth({ extraOnSuccess = () => null }: UseHybridAuthArgs
     try {
       await supabaseSignInWithGoogle();
     } catch (error: any) {
-      toast.error(error.message || "Failed to sign in with Google");
+      toastError(error, "Failed to sign in with Google");
     }
   };
 
@@ -58,7 +59,7 @@ export function useHybridAuth({ extraOnSuccess = () => null }: UseHybridAuthArgs
       }
       navigate("/login");
     } catch (error: any) {
-      toast.error(error.message || "Failed to sign out");
+      toastError(error, "Failed to sign out");
     }
   };
 

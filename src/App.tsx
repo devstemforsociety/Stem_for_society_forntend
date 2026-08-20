@@ -1,84 +1,87 @@
 import { createTheme, MantineProvider } from "@mantine/core";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { NuqsAdapter } from "nuqs/adapters/react";
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import type { ComponentType } from "react";
 import { Outlet, Route, Routes } from "react-router-dom";
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ErrorBoundary from "./components/ErrorBoundary";
+import ConnectionBanner from "./components/error/ConnectionBanner";
+import RouteErrorBoundary from "./components/error/RouteErrorBoundary";
+import { lazyWithRetry } from "./lib/lazyWithRetry";
 
-const AdminApplicationsLayout = lazy(() => import("./layouts/AdminApplicationsLayout"));
-const AdminLayout = lazy(() => import("./layouts/AdminLayout"));
-const PartnerLayout = lazy(() => import("./layouts/PartnerLayout"));
-const PartnerSettingsLayout = lazy(() => import("./layouts/PartnerSettingsLayout"));
-const AdminBlogs = lazy(() => import("./pages/admin/AdminBlogs"));
-const AdminBlogSpotlight = lazy(() => import("./pages/admin/AdminBlogSpotlight"));
-const AdminCampusAmbassador = lazy(() => import("./pages/admin/AdminCampusAmbassador"));
-const AdminHome = lazy(() => import("./pages/admin/AdminHome"));
-const AdminInstitutionRegistrations = lazy(() => import("./pages/admin/AdminInstitutionPlan"));
-const AdminPartners = lazy(() => import("./pages/admin/AdminParnters"));
-const AdminPartnerDetails = lazy(() => import("./pages/admin/AdminPartnerDetails"));
-const AdminIndividual = lazy(() => import("./pages/admin/AdminIndividual"));
-const AdminSchedules = lazy(() => import("./pages/admin/AdminSchedules"));
-const AdminSignIn = lazy(() => import("./pages/admin/AdminSignIn"));
-const AdminStudentDetails = lazy(() => import("./pages/admin/AdminStudentDetails"));
-const AdminStudents = lazy(() => import("./pages/admin/AdminStudents"));
-const AdminTrainings = lazy(() => import("./pages/admin/AdminTrainings"));
-const AdminTrainingSpotlight = lazy(() => import("./pages/admin/AdminTrainingSpotlight"));
-const AdminTransactions = lazy(() => import("./pages/admin/AdminTransactions"));
-const BlogCreate = lazy(() => import("./pages/BlogCreate"));
-const BlogListing = lazy(() => import("./pages/BlogListing"));
-const BlogSpotlight = lazy(() => import("./pages/BlogSpotlight"));
-const CampusAmbassador = lazy(() => import("./pages/CampusAmbassador"));
-const Home = lazy(() => import("./pages/home"));
-const Login = lazy(() => import("./pages/Login"));
-const PartnerAccounts = lazy(() => import("./pages/partner/PartnerAccount"));
-const PartnerCourseDetails = lazy(() => import("./pages/partner/PartnerCourseDetails"));
-const PartnerCreateCourse = lazy(() => import("./pages/partner/PartnerCreateCourse"));
-const PartnerHome = lazy(() => import("./pages/partner/PartnerHome"));
-const PartnerEditCourse = lazy(() => import("./pages/partner/PartnerEditCourse"));
-const PartnerSettings = lazy(() => import("./pages/partner/PartnerSettings"));
-const PartnerSignIn = lazy(() => import("./pages/partner/PartnerSignIn"));
-const PartnerStudents = lazy(() => import("./pages/partner/PartnerStudents"));
-const PartnerTrainings = lazy(() => import("./pages/partner/PartnerTrainings"));
-const PartnerSignUp = lazy(() => import("./pages/partner/PartnerWithUs"));
-const StudentDetails = lazy(() => import("./pages/partner/StudentDetails"));
-const ForgotPassword = lazy(() => import("./pages/forgotPassword"));
-const PsychologyTraining = lazy(() => import("./pages/PsychologyTraining"));
-const SignUp = lazy(() => import("./pages/Signup"));
-const Training = lazy(() => import("./pages/Training"));
-const TrainingSpotlight = lazy(() => import("./pages/TrainingSpotlight"));
-const CareerCounselling = lazy(() => import("./pages/CareerCounselling"));
-const AdminCareerCounselling = lazy(() => import("./pages/admin/AdminCareerCounselling"));
-const ExploreProgramDashboard = lazy(() => import("./pages/ExploreProgramDashboard"));
-const PsychologyCounselling = lazy(() => import("./pages/PsychologyCounselling"));
-const InstitutionPricing = lazy(() => import("./pages/InstitutionPricing"));
-const CampusAmbassadorDash = lazy(() => import("./pages/CampusAmbassadorDash"));
-const CampusAmbassadorBooking = lazy(() => import("./pages/CampusAmbassadorBooking"));
-const PartnerRole = lazy(() => import("./pages/PartnerRole"));
-const CampusAmbassadorSignup = lazy(() => import("./pages/CampusAmbassadorSignup"));
-const InstitutionPortal = lazy(() => import("./pages/PartnerInstitutionPortal"));
-const InstitutionLogin = lazy(() => import("./pages/InstitutionLogin"));
-const Courses = lazy(() => import("./pages/Courses"));
-const CourseDetail = lazy(() => import("./pages/CourseDetail"));
-const Community = lazy(() => import("./pages/Community"));
-const Blog = lazy(() => import("./pages/Blog"));
-const BlogArticle = lazy(() => import("./pages/BlogArticle"));
-const BlogPost = lazy(() => import("./pages/BlogPost"));
-const CareerCounsellingBookingFlow = lazy(() => import("./pages/CareerCounsellingBookingFlow"));
-const PsychologyBookingFlow = lazy(() => import("./pages/PsychologyBookingFlow"));
-const InstitutionBookingFlow = lazy(() => import("./pages/InstitutionBookingFlow"));
-const InstitutionOrIndividual = lazy(() => import("./pages/InstitutionOrIndividual"));
-const FinishingSchool = lazy(() => import("./pages/FinishingSchool"));
-const AcademyDetail = lazy(() => import("./pages/AcademyDetail"));
-const SkillDevelopment = lazy(() => import("./pages/SkillDevelopment"));
-const AuthCallback = lazy(() => import("./pages/AuthCallback"));
-const PrivacyPolicy = lazy(() => import("./components1/PrivacyPolicy"));
-const RefundPolicy = lazy(() => import("./components1/RefundPolicy"));
-const TermsConditions = lazy(() => import("./components1/TermsConditions"));
-const ComingSoon = lazy(() => import("./components1/ComingSoon"));
-const NotFound = lazy(() => import("./pages/404/NotFound").then(m => ({ default: m.NotFound })));
+const AdminApplicationsLayout = lazyWithRetry(() => import("./layouts/AdminApplicationsLayout"));
+const AdminLayout = lazyWithRetry(() => import("./layouts/AdminLayout"));
+const PartnerLayout = lazyWithRetry(() => import("./layouts/PartnerLayout"));
+const PartnerSettingsLayout = lazyWithRetry(() => import("./layouts/PartnerSettingsLayout"));
+const AdminBlogs = lazyWithRetry(() => import("./pages/admin/AdminBlogs"));
+const AdminBlogSpotlight = lazyWithRetry(() => import("./pages/admin/AdminBlogSpotlight"));
+const AdminCampusAmbassador = lazyWithRetry(() => import("./pages/admin/AdminCampusAmbassador"));
+const AdminHome = lazyWithRetry(() => import("./pages/admin/AdminHome"));
+const AdminInstitutionRegistrations = lazyWithRetry(() => import("./pages/admin/AdminInstitutionPlan"));
+const AdminPartners = lazyWithRetry(() => import("./pages/admin/AdminParnters"));
+const AdminPartnerDetails = lazyWithRetry(() => import("./pages/admin/AdminPartnerDetails"));
+const AdminIndividual = lazyWithRetry(() => import("./pages/admin/AdminIndividual"));
+const AdminSchedules = lazyWithRetry(() => import("./pages/admin/AdminSchedules"));
+const AdminSignIn = lazyWithRetry(() => import("./pages/admin/AdminSignIn"));
+const AdminStudentDetails = lazyWithRetry(() => import("./pages/admin/AdminStudentDetails"));
+const AdminStudents = lazyWithRetry(() => import("./pages/admin/AdminStudents"));
+const AdminTrainings = lazyWithRetry(() => import("./pages/admin/AdminTrainings"));
+const AdminTrainingSpotlight = lazyWithRetry(() => import("./pages/admin/AdminTrainingSpotlight"));
+const AdminTransactions = lazyWithRetry(() => import("./pages/admin/AdminTransactions"));
+const BlogCreate = lazyWithRetry(() => import("./pages/BlogCreate"));
+const BlogListing = lazyWithRetry(() => import("./pages/BlogListing"));
+const BlogSpotlight = lazyWithRetry(() => import("./pages/BlogSpotlight"));
+const CampusAmbassador = lazyWithRetry(() => import("./pages/CampusAmbassador"));
+const Home = lazyWithRetry(() => import("./pages/home"));
+const Login = lazyWithRetry(() => import("./pages/Login"));
+const PartnerAccounts = lazyWithRetry(() => import("./pages/partner/PartnerAccount"));
+const PartnerCourseDetails = lazyWithRetry(() => import("./pages/partner/PartnerCourseDetails"));
+const PartnerCreateCourse = lazyWithRetry(() => import("./pages/partner/PartnerCreateCourse"));
+const PartnerHome = lazyWithRetry(() => import("./pages/partner/PartnerHome"));
+const PartnerEditCourse = lazyWithRetry(() => import("./pages/partner/PartnerEditCourse"));
+const PartnerSettings = lazyWithRetry(() => import("./pages/partner/PartnerSettings"));
+const PartnerSignIn = lazyWithRetry(() => import("./pages/partner/PartnerSignIn"));
+const PartnerStudents = lazyWithRetry(() => import("./pages/partner/PartnerStudents"));
+const PartnerTrainings = lazyWithRetry(() => import("./pages/partner/PartnerTrainings"));
+const PartnerSignUp = lazyWithRetry(() => import("./pages/partner/PartnerWithUs"));
+const StudentDetails = lazyWithRetry(() => import("./pages/partner/StudentDetails"));
+const ForgotPassword = lazyWithRetry(() => import("./pages/forgotPassword"));
+const PsychologyTraining = lazyWithRetry(() => import("./pages/PsychologyTraining"));
+const SignUp = lazyWithRetry(() => import("./pages/Signup"));
+const Training = lazyWithRetry(() => import("./pages/Training"));
+const TrainingSpotlight = lazyWithRetry(() => import("./pages/TrainingSpotlight"));
+const CareerCounselling = lazyWithRetry(() => import("./pages/CareerCounselling"));
+const AdminCareerCounselling = lazyWithRetry(() => import("./pages/admin/AdminCareerCounselling"));
+const ExploreProgramDashboard = lazyWithRetry(() => import("./pages/ExploreProgramDashboard"));
+const PsychologyCounselling = lazyWithRetry(() => import("./pages/PsychologyCounselling"));
+const InstitutionPricing = lazyWithRetry(() => import("./pages/InstitutionPricing"));
+const CampusAmbassadorDash = lazyWithRetry(() => import("./pages/CampusAmbassadorDash"));
+const CampusAmbassadorBooking = lazyWithRetry(() => import("./pages/CampusAmbassadorBooking"));
+const PartnerRole = lazyWithRetry(() => import("./pages/PartnerRole"));
+const CampusAmbassadorSignup = lazyWithRetry(() => import("./pages/CampusAmbassadorSignup"));
+const InstitutionPortal = lazyWithRetry(() => import("./pages/PartnerInstitutionPortal"));
+const InstitutionLogin = lazyWithRetry(() => import("./pages/InstitutionLogin"));
+const Courses = lazyWithRetry(() => import("./pages/Courses"));
+const CourseDetail = lazyWithRetry(() => import("./pages/CourseDetail"));
+const Community = lazyWithRetry(() => import("./pages/Community"));
+const Blog = lazyWithRetry(() => import("./pages/Blog"));
+const BlogArticle = lazyWithRetry(() => import("./pages/BlogArticle"));
+const BlogPost = lazyWithRetry(() => import("./pages/BlogPost"));
+const CareerCounsellingBookingFlow = lazyWithRetry(() => import("./pages/CareerCounsellingBookingFlow"));
+const PsychologyBookingFlow = lazyWithRetry(() => import("./pages/PsychologyBookingFlow"));
+const InstitutionBookingFlow = lazyWithRetry(() => import("./pages/InstitutionBookingFlow"));
+const InstitutionOrIndividual = lazyWithRetry(() => import("./pages/InstitutionOrIndividual"));
+const FinishingSchool = lazyWithRetry(() => import("./pages/FinishingSchool"));
+const AcademyDetail = lazyWithRetry(() => import("./pages/AcademyDetail"));
+const SkillDevelopment = lazyWithRetry(() => import("./pages/SkillDevelopment"));
+const AuthCallback = lazyWithRetry(() => import("./pages/AuthCallback"));
+const PrivacyPolicy = lazyWithRetry(() => import("./components1/PrivacyPolicy"));
+const RefundPolicy = lazyWithRetry(() => import("./components1/RefundPolicy"));
+const TermsConditions = lazyWithRetry(() => import("./components1/TermsConditions"));
+const ComingSoon = lazyWithRetry(() => import("./components1/ComingSoon"));
+const NotFound = lazyWithRetry(() => import("./pages/404/NotFound").then(m => ({ default: m.NotFound })));
 
 
 
@@ -159,7 +162,11 @@ function AppLayout() {
   return (
     <>
       <div className="min-h-screen flex flex-col">
-        <Outlet />
+        {/* Inside the layout on purpose: if a page crashes, only the content
+            region is replaced - the site around it keeps working. */}
+        <RouteErrorBoundary>
+          <Outlet />
+        </RouteErrorBoundary>
       </div>
     </>
   );
@@ -207,6 +214,10 @@ function App() {
         <NuqsAdapter>
           <QueryClientProvider client={queryClient}>
             <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>}>
+              {/* Backstop for routes that sit outside a layout, and for a
+                  crash in a layout itself. Layout-level boundaries handle the
+                  ordinary case and keep the chrome on screen. */}
+              <RouteErrorBoundary variant="page" source="route-root">
               <Routes>
               <Route path="/" element={<AppLayout />}>
                 <Route index element={<Home />} />
@@ -350,6 +361,7 @@ function App() {
                 </Route>
               </Route>
             </Routes>
+              </RouteErrorBoundary>
             </Suspense>
             <ToastContainer
               transition={Slide}
@@ -357,6 +369,7 @@ function App() {
               autoClose={6000}
               position="bottom-right"
             />
+            <ConnectionBanner />
             <ReactQueryDevtoolsGate />
           </QueryClientProvider>
         </NuqsAdapter>

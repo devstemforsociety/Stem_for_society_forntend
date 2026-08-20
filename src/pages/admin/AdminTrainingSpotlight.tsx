@@ -1,3 +1,4 @@
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { Badge, Button, NumberInput, Rating, Paper, Text } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -612,7 +613,7 @@ export default function AdminTrainingSpotlight() {
                     {l.content && (
                       <div
                         className="ql-snow mb-3 text-sm"
-                        dangerouslySetInnerHTML={{ __html: l.content }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(l.content) }}
                       ></div>
                     )}
                     <div className="flex flex-col gap-2 text-sm">

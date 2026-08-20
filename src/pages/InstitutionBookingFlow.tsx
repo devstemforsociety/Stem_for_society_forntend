@@ -1,3 +1,4 @@
+import { clientSafeText } from "@/lib/errors";
 import React, { useState, useCallback, useEffect } from 'react';
 import Header from '@/components1/Header';
 import { Button } from '@/components1/ui/button';
@@ -581,7 +582,7 @@ const InstitutionBookingFlow = () => {
       // Razorpay event handler
       rzp.on("payment.failed", (res) => {
         console.log("Failure:", res);
-        toast.error("Payment failed! Reason:\n" + res.error.description, {
+        toast.error("Payment failed! Reason:\n" + clientSafeText(res.error.description), {
           autoClose: false,
           closeOnClick: false,
         });

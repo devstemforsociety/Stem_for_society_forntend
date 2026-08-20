@@ -1,3 +1,4 @@
+import { clientSafeText } from "@/lib/errors";
 import React, { useState, useCallback } from 'react';
 import Header from '@/components1/Header';
 import { Button } from '@/components1/ui/button';
@@ -624,7 +625,7 @@ const PsychologyBookingFlow = () => {
       
       rzp.on("payment.failed", (res: any) => {
         console.error("Payment Failure: ", res);
-        toast.error('Payment Failed. Please try again.\n' + res.error.description);
+        toast.error('Payment Failed. Please try again.\n' + clientSafeText(res.error.description));
       });
       
       console.log('🔵 Opening Razorpay checkout...');
