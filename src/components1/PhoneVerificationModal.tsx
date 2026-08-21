@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { Button } from "@/components1/ui/button";
-import { Input } from "@/components1/ui/input";
+import { PhoneInput } from "@/components1/ui/phone-input";
 import { Label } from "@/components1/ui/label";
 
 interface PhoneVerificationModalProps {
@@ -68,21 +68,12 @@ const PhoneVerificationModal = ({
             <Label htmlFor="phone" className="text-gray-700 font-medium">
               Mobile Number
             </Label>
-            <div className="relative mt-1">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 font-medium">
-                +91
-              </span>
-              <Input
+            <div className="mt-1">
+              <PhoneInput
                 id="phone"
-                type="tel"
                 value={phoneNumber}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '');
-                  setPhoneNumber(value.slice(0, 10));
-                }}
+                onChange={setPhoneNumber}
                 placeholder="9876543210"
-                className="pl-12"
-                maxLength={10}
                 disabled={isSubmitting}
               />
             </div>

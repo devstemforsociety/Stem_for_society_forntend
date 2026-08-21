@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components1/ui/button";
 import { Input } from "@/components1/ui/input";
+import { PhoneInput } from "@/components1/ui/phone-input";
 import {
   Calendar,
   Clock,
@@ -618,6 +619,10 @@ const AcademyDetail = () => {
                       />
                       <Input
                         type="email"
+                        autoComplete="email"
+                        inputMode="email"
+                        autoCapitalize="none"
+                        autoCorrect="off"
                         placeholder="Email"
                         value={formData.email}
                         onChange={(e) =>
@@ -625,12 +630,10 @@ const AcademyDetail = () => {
                         }
                         className="h-10 md:h-12 bg-white text-gray-900 rounded-xl text-sm"
                       />
-                      <Input
-                        type="tel"
-                        placeholder="Mobile number"
+                      <PhoneInput
                         value={formData.mobile}
-                        onChange={(e) =>
-                          handleInputChange("mobile", e.target.value)
+                        onChange={(mobile) =>
+                          handleInputChange("mobile", mobile)
                         }
                         className="h-10 md:h-12 bg-white text-gray-900 rounded-xl text-sm"
                       />
@@ -676,6 +679,10 @@ const AcademyDetail = () => {
                       />
                       <Input
                         type="email"
+                        autoComplete="email"
+                        inputMode="email"
+                        autoCapitalize="none"
+                        autoCorrect="off"
                         placeholder="Email"
                         value={formData.email}
                         onChange={(e) =>
@@ -683,12 +690,10 @@ const AcademyDetail = () => {
                         }
                         className="h-10 md:h-12 bg-white text-gray-900 rounded-xl text-sm"
                       />
-                      <Input
-                        type="tel"
-                        placeholder="Mobile number"
+                      <PhoneInput
                         value={formData.mobile}
-                        onChange={(e) =>
-                          handleInputChange("mobile", e.target.value)
+                        onChange={(mobile) =>
+                          handleInputChange("mobile", mobile)
                         }
                         className="h-10 md:h-12 bg-white text-gray-900 rounded-xl text-sm"
                       />

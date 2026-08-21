@@ -1,6 +1,7 @@
 import { toastError } from "@/lib/utils";
 import { Button } from "@/components1/ui/button";
 import { Input } from "@/components1/ui/input";
+import { PasswordInput } from "@/components1/ui/password-input";
 import { Link } from "react-router-dom";
 import { signInWithGoogle } from "../../lib/supabaseAuth";
 import { toast } from "react-toastify";
@@ -60,6 +61,10 @@ const LoginForm: React.FC<LoginFormProps> = ({
             id="email"
             name="email"
             type="email"
+            autoComplete="email"
+            inputMode="email"
+            autoCapitalize="none"
+            autoCorrect="off"
             placeholder="Email"
             value={email}
             onChange={onInputChange}
@@ -69,11 +74,11 @@ const LoginForm: React.FC<LoginFormProps> = ({
         </div>
 
         <div className="space-y-1">
-          <Input
+          <PasswordInput
+            autoComplete="current-password"
             id="password"
             name="password"
-            type="password"
-            placeholder="Password"
+                        placeholder="Password"
             value={password}
             onChange={onInputChange}
             className="h-10 bg-white border-gray-300 text-gray-800 rounded-xl placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500"

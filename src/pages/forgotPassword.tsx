@@ -20,6 +20,8 @@ interface ForgotPasswordFormData {
   confirmPassword: string;
   otpSent: boolean;
   otpVerified: boolean;
+  /** Issued by /email/verifyOTP; /auth/reset-password rejects the reset without it. */
+  resetToken: string;
 }
 
 // Inline ForgotPasswordForm Component
@@ -49,6 +51,7 @@ type VerifyOTPResponse = {
   message: string;
   otp: string;
   email: string;
+  resetToken?: string;
 };
 
 type ResetPasswordResponse = {
@@ -196,6 +199,10 @@ const ForgotPasswordForm = ({
                   id="email"
                   name="email"
                   type="email"
+                  autoComplete="email"
+                  inputMode="email"
+                  autoCapitalize="none"
+                  autoCorrect="off"
                   value={email}
                   onChange={onInputChange}
                   onKeyPress={handleKeyPress}
@@ -309,6 +316,7 @@ const ForgotPasswordForm = ({
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
                   value={password}
                   onChange={onInputChange}
                   onKeyPress={handleKeyPress}
@@ -320,6 +328,8 @@ const ForgotPasswordForm = ({
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-pressed={showPassword}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -337,6 +347,7 @@ const ForgotPasswordForm = ({
                   id="confirmPassword"
                   name="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
+                  autoComplete="new-password"
                   value={confirmPassword}
                   onChange={onInputChange}
                   onKeyPress={handleKeyPress}
@@ -348,6 +359,8 @@ const ForgotPasswordForm = ({
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                  aria-pressed={showConfirmPassword}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
                 >
                   {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -506,7 +519,7 @@ function useResetPassword() {
   return useMutation<
     ResetPasswordResponse,
     AxiosError<GenericError>,
-    { email: string; newPassword: string },
+    { email: string; newPassword: string; resetToken: string },
     unknown
   >({
     mutationFn: async (data) => {
@@ -532,6 +545,7 @@ const ForgotPassword = () => {
     confirmPassword: "",
     otpSent: false,
     otpVerified: false,
+    resetToken: "",
   });
 
   const { user } = useUser();
@@ -617,7 +631,11 @@ const ForgotPassword = () => {
 
       if (response?.message) {
         toast.success("OTP verified successfully!");
-        setFormData(prev => ({ ...prev, otpVerified: true }));
+        setFormData(prev => ({
+          ...prev,
+          otpVerified: true,
+          resetToken: response.resetToken ?? "",
+        }));
         setCurrentStep("password");
       } else {
         toast.error('Invalid OTP. Please try again.');
@@ -672,6 +690,7 @@ const ForgotPassword = () => {
       const response = await resetPassword({
         email: formData.email.trim(),
         newPassword: formData.password,
+        resetToken: formData.resetToken,
       });
 
       if (response?.message) {
@@ -685,6 +704,7 @@ const ForgotPassword = () => {
           confirmPassword: "",
           otpSent: false,
           otpVerified: false,
+          resetToken: "",
         });
         
         // Redirect to login page

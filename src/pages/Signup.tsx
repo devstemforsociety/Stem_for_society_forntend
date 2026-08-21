@@ -2,6 +2,8 @@ import { mutationErrorHandler, toastError } from "@/lib/utils";
 import { useState } from "react";
 import { Button } from "@/components1/ui/button";
 import { Input } from "@/components1/ui/input";
+import { PhoneInput } from "@/components1/ui/phone-input";
+import { PasswordInput } from "@/components1/ui/password-input";
 import { Label } from "@/components1/ui/label";
 import { Checkbox } from "@/components1/ui/checkbox";
 import { Link, useNavigate } from "react-router-dom";
@@ -204,6 +206,10 @@ const Signup = () => {
                   <Input
                     name="email"
                     type="email"
+                    autoComplete="email"
+                    inputMode="email"
+                    autoCapitalize="none"
+                    autoCorrect="off"
                     placeholder="Enter your email"
                     value={formData.email}
                     onChange={handleChange}
@@ -213,22 +219,22 @@ const Signup = () => {
                 </div>
                 <div>
                   <Label>Phone</Label>
-                  <Input
+                  <PhoneInput
                     name="mobile"
-                    type="tel"
-                    placeholder="Enter your phone"
                     value={formData.mobile}
-                    onChange={handleChange}
+                    onChange={(mobile) =>
+                      setFormData((prev) => ({ ...prev, mobile }))
+                    }
                     required
                     disabled={isAnyLoading}
                   />
                 </div>
                 <div>
                   <Label>Password</Label>
-                  <Input
+                  <PasswordInput
+                    autoComplete="new-password"
                     name="password"
-                    type="password"
-                    placeholder="Enter your password"
+                                        placeholder="Enter your password"
                     value={formData.password}
                     onChange={handleChange}
                     required
@@ -237,10 +243,10 @@ const Signup = () => {
                 </div>
                 <div>
                   <Label>Confirm Password</Label>
-                  <Input
+                  <PasswordInput
+                    autoComplete="new-password"
                     name="confirmPassword"
-                    type="password"
-                    placeholder="Confirm your password"
+                                        placeholder="Confirm your password"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
@@ -377,6 +383,10 @@ const Signup = () => {
                   <Input
                     name="email"
                     type="email"
+                    autoComplete="email"
+                    inputMode="email"
+                    autoCapitalize="none"
+                    autoCorrect="off"
                     placeholder="Enter your email"
                     value={formData.email}
                     onChange={handleChange}
@@ -386,22 +396,22 @@ const Signup = () => {
                 </div>
                 <div>
                   <Label>Phone</Label>
-                  <Input
+                  <PhoneInput
                     name="mobile"
-                    type="tel"
-                    placeholder="Enter your phone"
                     value={formData.mobile}
-                    onChange={handleChange}
+                    onChange={(mobile) =>
+                      setFormData((prev) => ({ ...prev, mobile }))
+                    }
                     required
                     disabled={isAnyLoading}
                   />
                 </div>
                 <div>
                   <Label>Password</Label>
-                  <Input
+                  <PasswordInput
+                    autoComplete="new-password"
                     name="password"
-                    type="password"
-                    placeholder="Enter your password"
+                                        placeholder="Enter your password"
                     value={formData.password}
                     onChange={handleChange}
                     required
@@ -410,10 +420,10 @@ const Signup = () => {
                 </div>
                 <div>
                   <Label>Confirm Password</Label>
-                  <Input
+                  <PasswordInput
+                    autoComplete="new-password"
                     name="confirmPassword"
-                    type="password"
-                    placeholder="Confirm your password"
+                                        placeholder="Confirm your password"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required

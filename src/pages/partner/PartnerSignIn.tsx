@@ -1,4 +1,11 @@
-import { Button, Paper, Text, TextInput, Title } from "@mantine/core";
+import {
+  Button,
+  Paper,
+  PasswordInput,
+  Text,
+  TextInput,
+  Title,
+} from "@mantine/core";
 import { Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
@@ -77,12 +84,13 @@ export default function PartnerSignIn() {
               input: "transition-all duration-200 focus:shadow-sm",
             }}
           />
-          <TextInput
+          {/* Mantine's PasswordInput carries its own accessible reveal toggle. */}
+          <PasswordInput
             label="Password"
             placeholder="Enter your password"
             size="md"
             name="password"
-            type="password"
+            autoComplete="current-password"
             required
             value={formData.password}
             onChange={handleInputChange}

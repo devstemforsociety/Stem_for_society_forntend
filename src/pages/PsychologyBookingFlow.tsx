@@ -1,4 +1,5 @@
 import { clientSafeText } from "@/lib/errors";
+import { PhoneInput } from "@/components1/ui/phone-input";
 import React, { useState, useCallback } from 'react';
 import Header from '@/components1/Header';
 import { Button } from '@/components1/ui/button';
@@ -196,13 +197,6 @@ const INDIAN_STATES = [
 
 
 
-const COUNTRY_CODES = [
-  { code: '+91', country: 'India' },
-  { code: '+1', country: 'USA' },
-  { code: '+44', country: 'UK' },
-  { code: '+971', country: 'UAE' },
-  { code: '+65', country: 'Singapore' },
-];
 
 const DOCUMENT_TYPES = [
   { value: 'student_id', label: 'Student ID Card' },
@@ -780,6 +774,10 @@ const PsychologyBookingFlow = () => {
           <Input
             placeholder="Email *"
             type="email"
+            autoComplete="email"
+            inputMode="email"
+            autoCapitalize="none"
+            autoCorrect="off"
             value={formData.email}
             onChange={(e) => {
               updateFormData('email', e.target.value);
@@ -845,28 +843,19 @@ const PsychologyBookingFlow = () => {
       </div>
 
       {/* Mobile Number (without OTP) */}
-      <div className="flex gap-3">
-        <Select value={formData.countryCode} onValueChange={(value) => updateFormData('countryCode', value)}>
-          <SelectTrigger className="bg-[#F1F4F9] border border-gray-200 h-12 rounded-lg w-28">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {COUNTRY_CODES.map((item) => (
-              <SelectItem key={item.code} value={item.code}>
-                {item.code}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        
-        <Input
+      {/*
+        A country-code selector used to sit here offering +1/+44/+971/+65, but
+        the chosen code was never sent anywhere and the API only accepts a
+        ten-digit Indian number - so picking anything else produced "Mobile
+        number is invalid" with nothing to explain it. PhoneInput shows the
+        +91 the backend actually requires.
+      */}
+      <div>
+        <PhoneInput
           placeholder="Mobile Number *"
           value={formData.mobile}
-          onChange={(e) => {
-            updateFormData('mobile', e.target.value.replace(/\D/g, '').slice(0, 10));
-          }}
+          onChange={(mobile) => updateFormData('mobile', mobile)}
           className="bg-[#F1F4F9] border border-gray-200 h-12 rounded-lg flex-1 focus:border-[#0389FF] focus:ring-[#0389FF]"
-          maxLength={10}
         />
       </div>
     </div>

@@ -65,6 +65,7 @@ export default function AdminSignIn() {
               }}
             />
             <PasswordInput
+              autoComplete="current-password"
               label="Password"
               placeholder="Enter your password"
               size="md"

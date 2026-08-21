@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { PasswordInput } from "@/components1/ui/password-input";
 import { usePartner } from '@/lib/hooks';
 import { Button } from '@/components1/ui/button';
 import { Input } from '@/components1/ui/input';
@@ -55,6 +56,10 @@ const InstitutionLogin = () => {
               <div>
                 <Input
                   type="email"
+                  autoComplete="email"
+                  inputMode="email"
+                  autoCapitalize="none"
+                  autoCorrect="off"
                   placeholder="Email"
                   name="email"
                   value={formData.email}
@@ -64,9 +69,9 @@ const InstitutionLogin = () => {
               </div>
 
               <div>
-                <Input
-                  type="password"
-                  placeholder="Password"
+                <PasswordInput
+                  autoComplete="current-password"
+                                    placeholder="Password"
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}

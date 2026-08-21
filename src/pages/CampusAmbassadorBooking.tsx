@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { PhoneInput } from "@/components1/ui/phone-input";
 import Header from '@/components1/Header';
 import { Button } from '@/components1/ui/button';
 import { Input } from '@/components1/ui/input';
@@ -369,6 +370,10 @@ const CampusAmbassadorBooking = () => {
         <Input
           placeholder="Email *"
           type="email"
+          autoComplete="email"
+          inputMode="email"
+          autoCapitalize="none"
+          autoCorrect="off"
           value={formData.email}
           onChange={(e) => handleInputChange('email', e.target.value)}
           className="h-12 bg-gray-100 border-0 placeholder:text-gray-500 pr-12"
@@ -413,10 +418,10 @@ const CampusAmbassadorBooking = () => {
       </div>
 
       <div>
-        <Input
+        <PhoneInput
           placeholder="Mobile Number *"
           value={formData.mobileNumber}
-          onChange={(e) => handleInputChange('mobileNumber', e.target.value)}
+          onChange={(mobile) => handleInputChange('mobileNumber', mobile)}
           className="h-12 bg-gray-100 border-0 placeholder:text-gray-500"
           required
         />

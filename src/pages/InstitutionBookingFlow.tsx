@@ -710,6 +710,10 @@ const InstitutionBookingFlow = () => {
           <Input
             placeholder="Contact Email *"
             type="email"
+            autoComplete="email"
+            inputMode="email"
+            autoCapitalize="none"
+            autoCorrect="off"
             value={formData.contactEmail}
             onChange={(e) => updateFormData('contactEmail', e.target.value)}
             className="h-12 bg-[#F1F4F9] border-0 placeholder:text-gray-500"

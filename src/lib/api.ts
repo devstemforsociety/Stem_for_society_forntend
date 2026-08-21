@@ -11,6 +11,21 @@ const REQUEST_TIMEOUT_MS = 20_000;
 
 const AUTH_STORAGE_KEYS = ["studentAuth", "partnerAuth", "adminAuth"] as const;
 
+/**
+ * React Query cache key -> localStorage key.
+ *
+ * These two names disagree only for the student ("auth" vs "studentAuth"),
+ * which is why the fallback below used to be hardcoded to "studentAuth" - and
+ * so partner and admin had no fallback at all. On a hard refresh, any request
+ * firing before the auth query reseeded the cache went out with no token,
+ * came back 401, and logged the user straight out.
+ */
+const STORAGE_KEY_FOR_QUERY_KEY: Record<string, string> = {
+  auth: "studentAuth",
+  partnerAuth: "partnerAuth",
+  adminAuth: "adminAuth",
+};
+
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -74,16 +89,18 @@ const api = (queryKeyName: string = "auth") => {
       queryKeyName,
     ])?.token;
 
-    // Fallback to localStorage if not in cache
+    // Fallback to localStorage if not in cache, using the key that belongs to
+    // whichever role this client was created for.
     if (!token) {
-      const stored = localStorage.getItem("studentAuth");
-      if (stored) {
+      const storageKey = STORAGE_KEY_FOR_QUERY_KEY[queryKeyName];
+      const stored = storageKey ? localStorage.getItem(storageKey) : null;
+      if (stored && storageKey) {
         try {
           const parsed = JSON.parse(stored);
           token = parsed.token;
         } catch {
           // Invalid JSON in localStorage
-          localStorage.removeItem("studentAuth");
+          localStorage.removeItem(storageKey);
           token = null;
         }
       }

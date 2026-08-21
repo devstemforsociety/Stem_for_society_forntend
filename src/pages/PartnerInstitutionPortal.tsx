@@ -9,6 +9,7 @@ import { usePartner } from "@/lib/hooks";
 import { GenericError, GenericResponse } from "../lib/types";
 import { mutationErrorHandler } from "../lib/utils";
 import { Input } from "@/components1/ui/input";
+import { PasswordInput } from "@/components1/ui/password-input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components1/ui/select";
 import { Checkbox } from "@/components1/ui/checkbox";
 import SignupLayout from "@/components1/ui/SignupLayout";
@@ -595,6 +596,10 @@ const PartnerInstitutionPortal = () => {
               <Input
                 placeholder="Email Address"
                 type="email"
+                autoComplete="email"
+                inputMode="email"
+                autoCapitalize="none"
+                autoCorrect="off"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
@@ -632,10 +637,10 @@ const PartnerInstitutionPortal = () => {
             )}
 
             <div>
-              <Input
+              <PasswordInput
+                autoComplete="new-password"
                 placeholder="Create Password"
-                type="password"
-                name="password"
+                                name="password"
                 value={formData.password}
                 onChange={handleChange}
                 className="bg-white/80 rounded-xl"

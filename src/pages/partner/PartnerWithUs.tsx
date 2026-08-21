@@ -285,6 +285,7 @@ function PartnerSignUp() {
           onChange={handleInputChange}
         />
         <PasswordInput
+          autoComplete="new-password"
           label="Password"
           placeholder="••••••••"
           size="md"
