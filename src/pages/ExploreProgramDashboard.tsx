@@ -54,7 +54,7 @@ const ExploreProgramDashboard = () => {
             {(stage) => (
               <>
                 {/* Logo Element - Improved responsive positioning */}
-                <div className={`absolute top-1/2 -translate-y-1/2 transition-all duration-[2500ms] ${
+                <div className={`absolute top-1/2 -translate-y-1/2 transition-all duration-[600ms] ${
                   stage === 'initial' || stage === 'textFadeOut'
                     ? 'left-1/2 -translate-x-1/2' 
                     : 'left-[20%] lg:left-[25%] -translate-x-1/2'
@@ -66,7 +66,7 @@ const ExploreProgramDashboard = () => {
                   <img 
                     src="/lovable-uploads/ceabc523-dba1-475b-b670-7ed6b88782a1.png" 
                     alt="STEM for Society Logo" 
-                    className={`object-contain transition-all duration-[2500ms] ${
+                    className={`object-contain transition-all duration-[600ms] ${
                       stage === 'initial' || stage === 'textFadeOut'
                         ? 'h-24 w-24 sm:h-32 sm:w-32 md:h-48 md:w-48 lg:h-64 lg:w-64' 
                         : 'h-32 w-32 sm:h-40 sm:w-40 md:h-56 md:w-56 lg:h-72 lg:w-72 opacity-50'
@@ -89,7 +89,7 @@ const ExploreProgramDashboard = () => {
                 </div>
 
                 {/* Desktop Services Section - Fixed header positioning */}
-                <div className={`hidden md:block absolute right-0 top-0 h-full transition-all duration-[2500ms] ${
+                <div className={`hidden md:block absolute right-0 top-0 h-full transition-all duration-[600ms] ${
                   stage === 'logoTransition' 
                     ? 'translate-x-0 opacity-100 w-[55%] lg:w-1/2' 
                     : 'translate-x-full opacity-0 w-1/2'

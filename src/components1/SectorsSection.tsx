@@ -61,7 +61,7 @@ const Sectors = () => {
                   ${isLastRow ? "lg:col-span-2 lg:justify-self-center" : ""}
                 `}
               >
-                <img
+                <img loading="lazy" decoding="async"
                   src={sector.icon}
                   alt={`${sector.label} icon`}
                   className="h-6 w-6 opacity-95 shrink-0"

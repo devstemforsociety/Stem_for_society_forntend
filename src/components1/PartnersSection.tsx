@@ -46,7 +46,7 @@ const PartnersSection = () => {
               >
                 {item.type === 'logo' ? (
                   <div className="flex items-center justify-center h-20 w-36 sm:h-24 sm:w-44 md:h-28 md:w-56 bg-transparent rounded-lg shadow-sm p-3 md:p-4">
-                    <img
+                    <img loading="lazy" decoding="async"
                       src={item.logo}
                       alt={item.name}
                       className="max-h-16 sm:max-h-20 md:max-h-28 w-auto object-contain"

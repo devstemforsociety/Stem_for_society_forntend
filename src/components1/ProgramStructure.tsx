@@ -45,7 +45,7 @@ bg-[#C6B7E2] hover:bg-[#B8A7D8]
 cursor-pointer ${getCardClasses("skill")}`}
             >
               <Link to="/skill-development">
-                <img
+                <img loading="lazy" decoding="async"
                   src={asset1}
                   alt="Skill Development"
                   className="absolute left-1/2 -translate-x-1/2 bottom-[-20px] sm:bottom-[-15px] md:bottom-[-20px] w-[250px] sm:w-[300px] md:w-[360px] lg:w-[411px] h-auto object-contain transition-all duration-500 ease-out group-hover:scale-110 group-hover:rotate-1"
@@ -84,7 +84,7 @@ cursor-pointer ${getCardClasses("finishing")}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <img
+                <img loading="lazy" decoding="async"
                   src={asset2}
                   alt="Finishing School"
                   className="absolute right-[-20px] sm:right-[-30px] md:right-[-40px] top-[-15px] sm:top-[-25px] md:top-[-30px] w-[220px] sm:w-[380px] md:w-[480px] lg:w-[550px] h-auto object-contain transition-all duration-500 group-hover:scale-110 group-hover:-translate-x-2 group-hover:-translate-y-2"
@@ -107,7 +107,7 @@ cursor-pointer ${getCardClasses("finishing")}`}
               className={`group relative w-full h-[280px] sm:h-[320px] md:h-[344px] lg:col-start-3 lg:col-span-2 lg:row-span-2 lg:row-start-3 rounded-2xl sm:rounded-3xl p-4 sm:p-6 overflow-hidden transition-all duration-500 bg-[#FFE07A] hover:bg-[#FFD65C] cursor-pointer ${getCardClasses("individuals")}`}
             >
               <Link to="/insituion-individual?mode=individual">
-                <img
+                <img loading="lazy" decoding="async"
                   src={asset3}
                   alt="Individuals"
                   className="absolute right-[10px] sm:right-[15px] md:right-[20px] top-[-10px] sm:top-[-15px] md:top-[-20px] w-[180px] sm:w-[260px] md:w-[320px] lg:w-[368px] h-auto object-contain transition-all duration-500 group-hover:scale-110 ps-5"
@@ -132,7 +132,7 @@ cursor-pointer ${getCardClasses("finishing")}`}
               className={`group relative w-full h-[280px] sm:h-[320px] md:h-[344px] lg:col-start-5 lg:row-start-3 lg:col-span-2 lg:row-span-2 rounded-2xl sm:rounded-3xl p-4 sm:p-6 overflow-hidden transition-all duration-500 bg-[#C8DD9A] hover:bg-[#B9D487] cursor-pointer ${getCardClasses("institutions")}`}
             >
               <Link to="/community">
-                <img
+                <img loading="lazy" decoding="async"
                   src={joinAsset}
                   alt="Join Community"
                   className="absolute bottom-[-10px] sm:bottom-[-15px] md:bottom-[-20px] right-[-5px] sm:right-[-8px] md:right-[-10px] w-[200px] sm:w-[260px] md:w-[320px] lg:w-[357px] h-auto object-contain transition-all duration-500 group-hover:scale-110"
@@ -151,7 +151,7 @@ cursor-pointer ${getCardClasses("finishing")}`}
               onMouseLeave={() => setHoveredCard(null)}
               className={`group relative w-full h-[280px] sm:h-[320px] md:h-[344px] lg:col-start-5 lg:row-start-3 lg:col-span-2 lg:row-span-2 rounded-2xl sm:rounded-3xl p-4 sm:p-6 overflow-hidden transition-all duration-500 bg-[#C8DD9A] hover:bg-[#B9D487] cursor-pointer ${getCardClasses("institutions")}`}
             >
-              <img
+              <img loading="lazy" decoding="async"
                 src={asset4}
                 alt="Institutions"
                 className="absolute bottom-[-40px] sm:bottom-[-60px] md:bottom-[-90px] right-[-5px] sm:right-[-7px] md:right-[-9px] w-[180px] sm:w-[260px] md:w-[320px] lg:w-auto h-auto object-contain transition-all duration-500 group-hover:scale-110"
@@ -172,7 +172,7 @@ cursor-pointer ${getCardClasses("finishing")}`}
               onMouseLeave={() => setHoveredCard(null)}
               className={`group relative w-full h-[280px] sm:h-[320px] md:h-[344px] sm:col-span-2 lg:col-span-4 lg:row-start-5 lg:row-span-2 rounded-2xl sm:rounded-3xl p-4 sm:p-6 overflow-hidden transition-all duration-500 bg-[#FFB27D] hover:bg-[#FFA165] cursor-pointer ${getCardClasses("founders")}`}
             >
-              <img
+              <img loading="lazy" decoding="async"
                 src={asset6}
                 alt="Founders Nest"
                 className="absolute bottom-[-10px] sm:bottom-[-15px] md:bottom-[-20px] right-0 w-[220px] sm:w-[320px] md:w-[420px] lg:w-[500px] h-auto object-contain transition-all duration-500 group-hover:scale-110"

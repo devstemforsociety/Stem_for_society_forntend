@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom"; // Added this import
 // Navigation Components
 import TopNavigation from "@/components1/NewUI/navigation/TopNavigation";
 import BottomNavigation from "@/components1/NewUI/navigation/BottomNavigation";
+import ModeSwitchDialog from "@/components1/NewUI/ModeSwitchDialog";
 
 // Individual View Components
 import IndividualHero from "@/components1/NewUI/individual/IndividualHero";
@@ -50,8 +51,20 @@ const Index = () => {
     ? modeParam 
     : "individual";
 
-  const setMode = (newMode: Mode) => {
+  /**
+   * Ask before crossing between the two views. Individual and Institutional
+   * list different services at different prices, so an unannounced switch made
+   * it easy to read one sides pricing as the others.
+   */
+  const [pendingMode, setPendingMode] = useState<Mode | null>(null);
+
+  const applyMode = (newMode: Mode) => {
     setSearchParams({ mode: newMode }, { replace: true });
+  };
+
+  const setMode = (newMode: Mode) => {
+    if (newMode === mode) return;
+    setPendingMode(newMode);
   };
 
   const [activeSection, setActiveSection] = useState<string>("services");
@@ -111,6 +124,16 @@ const Index = () => {
         </div>
         
         
+
+        {/* Confirms a move between the Individual and Institutional views */}
+        <ModeSwitchDialog
+          pendingMode={pendingMode}
+          onConfirm={() => {
+            if (pendingMode) applyMode(pendingMode);
+            setPendingMode(null);
+          }}
+          onCancel={() => setPendingMode(null)}
+        />
 
         {/* Top Navigation */}
         <TopNavigation mode={mode} setMode={setMode} />
