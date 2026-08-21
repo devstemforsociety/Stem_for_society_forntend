@@ -10,7 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
-import { api, queryClient } from "../lib/api";
+import { api, queryClient, clearAuthStorage } from "../lib/api";
 import { GenericError, GenericResponse } from "../lib/types";
 import { signInWithGoogle } from "../lib/supabaseAuth";
 
@@ -82,23 +82,36 @@ const Signup = () => {
       return;
     }
 
-    if (
-      Object.keys(formData).every(
-        (field) => formData[field as keyof SignUpForm]
-      )
-    ) {
-      if (!formData.accept)
-        return toast.warn("Accept terms and conditions to continue");
-      
-      // CLEAR PREVIOUS SESSION DATA BEFORE NEW REGISTRATION
-      queryClient.clear();
-      localStorage.clear();
-      
-      // Use API registration directly
-      signUpMutation.mutate(formData);
-    } else {
+    /**
+     * Check the text inputs only. The previous version ran every key of
+     * formData - including the `accept` checkbox - through a truthiness test,
+     * so leaving the terms box unticked reported "Please fill in all fields"
+     * even when every field was filled, and the accurate message below could
+     * never be reached.
+     */
+    const requiredFields: (keyof SignUpForm)[] = [
+      "firstName",
+      "email",
+      "mobile",
+      "password",
+      "confirmPassword",
+    ];
+    if (requiredFields.some((field) => !String(formData[field]).trim())) {
       toast.error("Please fill in all fields");
+      return;
     }
+
+    if (!formData.accept) {
+      toast.warn("Accept terms and conditions to continue");
+      return;
+    }
+
+    // Start the new registration from a clean session, without discarding
+    // unrelated keys other parts of the site own.
+    queryClient.clear();
+    clearAuthStorage();
+
+    signUpMutation.mutate(formData);
   };
 
   // Google sign-up function - redirects to OAuth flow

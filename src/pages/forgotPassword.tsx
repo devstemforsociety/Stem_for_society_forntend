@@ -707,10 +707,11 @@ const ForgotPassword = () => {
           resetToken: "",
         });
         
-        // Redirect to login page
+        // Long enough to register the success toast, short enough not to
+        // feel stalled.
         setTimeout(() => {
           navigate("/login");
-        }, 2000);
+        }, 800);
       } else {
         toast.error("Failed to reset password. Please try again.");
       }
@@ -816,8 +817,8 @@ const ForgotPassword = () => {
               <div
                 className={`absolute top-1/2 -translate-y-1/2 transition-all ${
                   stage === "logoTransition"
-                    ? "duration-[2500ms]"
-                    : "duration-[1500ms]"
+                    ? "duration-[600ms]"
+                    : "duration-[400ms]"
                 } ${
                   stage === "initial" || stage === "textFadeOut"
                     ? "left-1/2 -translate-x-1/2"
@@ -835,8 +836,8 @@ const ForgotPassword = () => {
                   alt="STEM for Society Logo"
                   className={`object-contain transition-all ${
                     stage === "logoTransition"
-                      ? "duration-[2500ms]"
-                      : "duration-[1500ms]"
+                      ? "duration-[600ms]"
+                      : "duration-[400ms]"
                   } ${
                     stage === "initial" || stage === "textFadeOut"
                       ? "h-32 w-32 md:h-48 md:w-48 lg:h-64 lg:w-64"
@@ -870,8 +871,8 @@ const ForgotPassword = () => {
               <div
                 className={`absolute right-0 top-0 h-full w-1/2 transition-all ${
                   stage === "logoTransition"
-                    ? "duration-[2500ms]"
-                    : "duration-[1500ms]"
+                    ? "duration-[600ms]"
+                    : "duration-[400ms]"
                 } ${
                   stage === "logoTransition"
                     ? "translate-x-0 opacity-100"

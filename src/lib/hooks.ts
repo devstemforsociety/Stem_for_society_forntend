@@ -13,7 +13,7 @@ import {
   PartnerProfileType,
   UserAuthResponse,
 } from "./types";
-import { mutationErrorHandler, sleep } from "./utils";
+import { mutationErrorHandler } from "./utils";
 
 type UseUserArgs = {
   extraOnSuccess?: () => void;
@@ -74,7 +74,6 @@ export function useUser({ extraOnSuccess = () => null }: UseUserArgs = {}) {
     unknown
   >({
     mutationFn: async (data) => {
-      await sleep(500);
       const response = await api().post<GenericResponse<UserAuthResponse>>(
         API_URL + "/auth/sign-in",
         data,
@@ -284,7 +283,6 @@ export function useAdmin({ extraOnSuccess = () => null }: UseUserArgs = {}) {
     unknown
   >({
     mutationFn: async (data) => {
-      await sleep(500);
       const response = await api().post(API_URL + "/admin/auth/sign-in", data);
       return response.data;
     },

@@ -67,7 +67,7 @@ export const queryClient = new QueryClient({
   }),
 });
 
-function clearAuthStorage() {
+export function clearAuthStorage() {
   for (const key of AUTH_STORAGE_KEYS) {
     try {
       localStorage.removeItem(key);
