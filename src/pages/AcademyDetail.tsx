@@ -329,10 +329,22 @@ const AcademyDetail = () => {
               return;
             }
 
-            toast.success(
-              "Payment was made successfully and is being verified. We will get back to you shortly if verification fails",
-              { autoClose: false, closeOnClick: false },
-            );
+            /**
+             * Confirm the payment with our own server before claiming success.
+             * The checkout callback is the only moment Razorpay hands us the
+             * signature, and /payments/verify-client is what flips the
+             * transaction from "pending" to "success" and stores the payment
+             * id. Without this call the money is taken but the enrolment never
+             * shows up under My Courses. The webhook is a backstop for the
+             * closed-tab case, not a substitute for this.
+             */
+            await api().post("/payments/verify-client", {
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+            });
+
+            toast.success("Payment successful - you are now enrolled.");
 
             // Force immediate refresh
             await queryClient.invalidateQueries({ queryKey: ["trainings"] });
@@ -367,7 +379,11 @@ const AcademyDetail = () => {
             }
           } catch (error) {
             console.error("Payment handler error:", error);
-            toast.error("Payment was made, but it could not be verified");
+            toast.error(
+              "Payment was received but could not be confirmed. Please contact support with Order ID: " +
+                order.orderId,
+              { autoClose: false, closeOnClick: false },
+            );
             await queryClient.invalidateQueries({ queryKey: ["trainings"] });
             await queryClient.invalidateQueries({
               queryKey: ["trainings", courseId],

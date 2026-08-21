@@ -459,8 +459,33 @@ const EnquiryPopup = ({ isOpen, onClose, mode, preSelectedService }: EnquiryPopu
         theme: {
           color: "#0389FF",
         },
-        handler: function (response: { razorpay_payment_id: string }) {
-          console.log(" Payment successful:", response);
+        handler: async function (response: {
+          razorpay_payment_id: string;
+          razorpay_order_id: string;
+          razorpay_signature: string;
+        }) {
+          /**
+           * Confirm the payment with our server before telling the visitor it
+           * worked. Without this the enquiry transaction stays "pending" and
+           * the enquiry is never recorded as paid, even though the money was
+           * taken. The webhook is a backstop for the closed-tab case.
+           */
+          try {
+            await api().post("/payments/verify-enquiry", {
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+            });
+          } catch (verifyError) {
+            console.error("Payment verification failed:", verifyError);
+            toast.error(
+              "Payment was received but could not be confirmed. Please contact support with Order ID: " +
+                order.orderId,
+              { autoClose: false, closeOnClick: false },
+            );
+            return;
+          }
+
           toast.success("Payment successful! We will contact you shortly.");
           onClose();
         },

@@ -588,6 +588,28 @@ const PsychologyBookingFlow = () => {
           contact: formData.mobile,
         },
         async handler(response) {
+          /**
+           * Confirm the payment with our server before telling the visitor it
+           * worked. Without this the enquiry transaction stays "pending" and
+           * the booking is never recorded as paid, even though the money was
+           * taken. The webhook is a backstop for the closed-tab case.
+           */
+          try {
+            await api().post("/payments/verify-enquiry", {
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+            });
+          } catch (verifyError) {
+            console.error("Payment verification failed:", verifyError);
+            toast.error(
+              "Payment was received but could not be confirmed. Please contact support with Order ID: " +
+                order.orderId,
+              { autoClose: false, closeOnClick: false },
+            );
+            return;
+          }
+
           toast.success('Payment Successful! A Meet link has been generated and sent to your email.');
           setCurrentStep(5);
           try {
