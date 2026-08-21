@@ -118,7 +118,16 @@ const api = (queryKeyName: string = "auth") => {
       const appError = normalizeError(error);
       reportApiFailure(appError.kind);
 
-      if (appError.kind === "unauthorized") {
+      // A 401 from a sign-in endpoint means the submitted credentials were
+      // rejected, not that an existing session lapsed. Treating it as expiry
+      // bounces the visitor off the very form they are using: /partner-signin
+      // does not match the onAuthScreen test below, so it would redirect to
+      // /login mid-attempt.
+      const isSignInRequest = /\/auth\/sign-in\/?$/.test(
+        error?.config?.url ?? "",
+      );
+
+      if (appError.kind === "unauthorized" && !isSignInRequest) {
         // Drop only our own session keys. `localStorage.clear()` also wiped
         // unrelated app state (drafts, preferences) on every expiry.
         queryClient.clear();
