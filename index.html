@@ -13,8 +13,8 @@
 	<div id="root">
 		<!--
 			Shown until React mounts (React clears this container on first render).
-			If the bundle fails to download or throws before mounting, the timer
-			below turns this into a readable message instead of a blank page.
+			If the bundle fails to download or throws before mounting, boot-check.js
+			turns this into a readable message instead of a blank page.
 		-->
 		<div id="boot-fallback"
 			style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:system-ui,sans-serif;background:#f8fafc">
@@ -41,20 +41,7 @@
 		}
 	</style>
 
-	<script>
-		// If the app has not mounted after 20s, the bundle is not coming.
-		setTimeout(function () {
-			var fallback = document.getElementById("boot-fallback");
-			if (!fallback) return; // React mounted and removed it.
-			var spinner = document.getElementById("boot-spinner");
-			if (spinner) spinner.style.display = "none";
-			document.getElementById("boot-message").innerHTML =
-				'<div style="color:#0f172a;font-size:18px;font-weight:600;margin-bottom:10px">We could not load the page</div>' +
-				'<div style="color:#475569;line-height:1.6;margin-bottom:18px">This is usually a connection problem. Please check your internet and reload.</div>' +
-				'<button type="button" onclick="window.location.reload()" style="border:0;border-radius:999px;background:#0f172a;color:#fff;padding:10px 22px;font-size:14px;cursor:pointer">Reload page</button>';
-		}, 20000);
-	</script>
-
+	<script src="/boot-check.js"></script>
 	<script type="module" src="/src/main.tsx"></script>
 </body>
 

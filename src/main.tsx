@@ -60,25 +60,46 @@ if (missingEnv.length > 0) {
  * visitor staring at a blank screen.
  */
 function renderBootFailure(container: HTMLElement, reference: string): void {
-  container.innerHTML = `
-    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Poppins',system-ui,sans-serif;background:#f8fafc">
-      <div style="max-width:520px;text-align:center">
-        <h1 style="font-size:20px;font-weight:600;color:#0f172a;margin:0 0 12px">
-          We could not load the page
-        </h1>
-        <p style="color:#475569;line-height:1.6;margin:0 0 20px">
-          Something went wrong while starting the site. Please reload - if it
-          keeps happening, contact support and quote the reference below.
-        </p>
-        <button type="button" onclick="window.location.reload()"
-          style="border:0;border-radius:999px;background:#0f172a;color:#fff;padding:10px 22px;font-size:14px;cursor:pointer">
-          Reload page
-        </button>
-        <p style="color:#94a3b8;font-size:12px;margin-top:18px">
-          Reference: <span style="font-family:ui-monospace,monospace">${reference}</span>
-        </p>
-      </div>
-    </div>`;
+  // Built with DOM calls rather than an HTML string with an inline `onclick`,
+  // so the page still works under a Content-Security-Policy that forbids
+  // inline script.
+  container.textContent = "";
+
+  const panel = document.createElement("div");
+  panel.style.cssText =
+    "min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Poppins',system-ui,sans-serif;background:#f8fafc";
+
+  const inner = document.createElement("div");
+  inner.style.cssText = "max-width:520px;text-align:center";
+
+  const heading = document.createElement("h1");
+  heading.style.cssText =
+    "font-size:20px;font-weight:600;color:#0f172a;margin:0 0 12px";
+  heading.textContent = "We could not load the page";
+
+  const detail = document.createElement("p");
+  detail.style.cssText = "color:#475569;line-height:1.6;margin:0 0 20px";
+  detail.textContent =
+    "Something went wrong while starting the site. Please reload - if it keeps happening, contact support and quote the reference below.";
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.style.cssText =
+    "border:0;border-radius:999px;background:#0f172a;color:#fff;padding:10px 22px;font-size:14px;cursor:pointer";
+  button.textContent = "Reload page";
+  button.addEventListener("click", () => window.location.reload());
+
+  const ref = document.createElement("p");
+  ref.style.cssText = "color:#94a3b8;font-size:12px;margin-top:18px";
+  ref.append("Reference: ");
+  const refValue = document.createElement("span");
+  refValue.style.cssText = "font-family:ui-monospace,monospace";
+  refValue.textContent = reference;
+  ref.appendChild(refValue);
+
+  inner.append(heading, detail, button, ref);
+  panel.appendChild(inner);
+  container.appendChild(panel);
 }
 
 const container = document.getElementById("root");
