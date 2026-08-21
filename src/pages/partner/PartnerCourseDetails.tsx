@@ -72,36 +72,52 @@ function useDeleteTraining(id?: string) {
   });
 }
 
-function useGenerateCertificates({ id }: { id?: string }) {
+/** How the API should treat students who have not left feedback. */
+type MissingFeedbackMode = "abort" | "include" | "skip";
+
+type PendingStudent = { enrolmentId: string; name: string };
+type FeedbackPendingPayload = {
+  code?: string;
+  error?: string;
+  pendingFeedback?: { count: number; students: PendingStudent[] };
+  unpaidSkipped?: { count: number; students: PendingStudent[] };
+};
+
+type GenerateVariables = {
+  enrolmentIds: (string | number)[];
+  missingFeedback: MissingFeedbackMode;
+};
+
+function useGenerateCertificates({
+  id,
+  onFeedbackPending,
+}: {
+  id?: string;
+  onFeedbackPending?: (payload: FeedbackPendingPayload) => void;
+}) {
   const queryClientHook = useQueryClient();
   const navigate = useNavigate();
-  return useMutation<
-    GenericResponse,
-    AxiosError<GenericError>,
-    (string | number)[]
-  >({
+  return useMutation<GenericResponse, AxiosError<GenericError>, GenerateVariables>({
     mutationFn: async (data) => {
-      console.log("🚀 Certificate generation request:", {
-        trainingId: id,
-        selectedStudents: data,
-        dataTypes: data.map((item) => typeof item),
-      });
 
       // Convert all numbers to strings to match backend UUID validation
-      const stringifiedData = data.map((item) => String(item));
-
-      console.log("🚀 Sending to backend:", stringifiedData);
+      const enrolmentIds = data.enrolmentIds.map((item) => String(item));
 
       return (
-        await api("partnerAuth").post(
-          `/partner/trainings/${id}/generate`,
-          stringifiedData,
-        )
+        await api("partnerAuth").post(`/partner/trainings/${id}/generate`, {
+          enrolmentIds,
+          missingFeedback: data.missingFeedback,
+        })
       ).data;
     },
     onError: (err) => {
-      console.error("🚀 Certificate generation error:", err);
-      console.error("🚀 Error response:", err.response?.data);
+      const payload = err.response?.data as FeedbackPendingPayload | undefined;
+      // Not a failure the partner needs to see as an error: ask them how to
+      // handle the students who have not given feedback yet.
+      if (err.response?.status === 422 && payload?.code === "FEEDBACK_PENDING") {
+        onFeedbackPending?.(payload);
+        return;
+      }
       mutationErrorHandler(err, navigate, "/partner/signin");
     },
     onSuccess: (res) => {
@@ -121,9 +137,18 @@ export default function PartnerCourseDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data, error, isLoading } = useTrainingData({ id });
+  const [feedbackPrompt, setFeedbackPrompt] =
+    useState<FeedbackPendingPayload | null>(null);
   const { mutate: generateCertificates, isPending } = useGenerateCertificates({
     id,
+    onFeedbackPending: setFeedbackPrompt,
   });
+
+  /** Re-runs the request once the partner has chosen how to handle them. */
+  const resolveFeedbackPrompt = (missingFeedback: MissingFeedbackMode) => {
+    setFeedbackPrompt(null);
+    generateCertificates({ enrolmentIds: selectedStudents, missingFeedback });
+  };
   const { mutate: deleteTraining, isPending: isDeleting } = useDeleteTraining(id);
   const { data: payoutData, isLoading: payoutLoading } = usePartnerHomeData();
   const [selectedStudents, setSelectedStudents] = useState<(string | number)[]>(
@@ -141,6 +166,62 @@ export default function PartnerCourseDetails() {
 
   return (
     <div className="w-full max-w-7xl mx-auto p-6 space-y-6 animate-in fade-in duration-500">
+      {/* Pending-feedback decision */}
+      <Modal
+        opened={feedbackPrompt !== null}
+        onClose={() => setFeedbackPrompt(null)}
+        title="Some students have not given feedback"
+        centered
+        radius="md"
+      >
+        <div className="space-y-4">
+          <Text size="sm">
+            {feedbackPrompt?.pendingFeedback?.count ?? 0} of the{" "}
+            {selectedStudents.length} selected student(s) have not submitted a
+            rating and feedback yet.
+          </Text>
+
+          {feedbackPrompt?.pendingFeedback?.students?.length ? (
+            <Paper withBorder radius="md" className="max-h-40 overflow-y-auto p-3">
+              <ul className="list-disc pl-4 text-sm text-gray-700">
+                {feedbackPrompt.pendingFeedback.students.map((student) => (
+                  <li key={student.enrolmentId}>{student.name}</li>
+                ))}
+              </ul>
+            </Paper>
+          ) : null}
+
+          {feedbackPrompt?.unpaidSkipped?.count ? (
+            <Alert color="orange" variant="light" className="text-xs">
+              {feedbackPrompt.unpaidSkipped.count} student(s) have not completed
+              payment for this course and will not receive a certificate either
+              way.
+            </Alert>
+          ) : null}
+
+          <Text size="sm" c="dimmed">
+            Do you still wish to proceed and generate for everyone, or skip these
+            students?
+          </Text>
+
+          <div className="flex flex-wrap justify-end gap-3 mt-6">
+            <Button variant="subtle" radius="md" onClick={() => setFeedbackPrompt(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="light"
+              radius="md"
+              onClick={() => resolveFeedbackPrompt("skip")}
+            >
+              Skip them
+            </Button>
+            <Button radius="md" onClick={() => resolveFeedbackPrompt("include")}>
+              Generate for all
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
       {/* Delete Confirmation Modal */}
       <Modal
         opened={deleteOpened}
@@ -475,7 +556,10 @@ export default function PartnerCourseDetails() {
                     radius="md"
                     disabled={isPending || selectedStudents.length < 1}
                     onClick={() => {
-                      generateCertificates(selectedStudents);
+                      generateCertificates({
+                        enrolmentIds: selectedStudents,
+                        missingFeedback: "abort",
+                      });
                     }}
                     className="bg-blue-600 hover:bg-blue-700 transition-all duration-200"
                   >
