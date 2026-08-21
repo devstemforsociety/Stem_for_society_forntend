@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import { api, queryClient } from "../lib/api";
 import { GenericError, GenericResponse } from "../lib/types";
 import { mutationErrorHandler } from "../lib/utils";
+import { useUser } from "../lib/hooks";
 import RichTextEditorNew from "../components/RichTextEditorNew.client";
 
 // Type definitions matching your existing structure
@@ -122,7 +123,16 @@ function useCreateBlog() {
 
       return response.data;
     },
-    onError: (error) => mutationErrorHandler(error),
+    onError: (error) => {
+      if (error.response?.status === 401) {
+        toast.error(
+          "You need to be signed in to publish an article. Sign in and your details will still be here.",
+          { autoClose: false },
+        );
+        return;
+      }
+      mutationErrorHandler(error);
+    },
     onSuccess: () => {
       toast.success("Blog creation successful");
       navigate("/blog");
@@ -146,6 +156,9 @@ const BlogCreateContent = () => {
     staleTime: Infinity,
     gcTime: Infinity,
   });
+
+  // Publishing requires an account; the banner below says so up front.
+  const { user } = useUser();
 
   const [formData, setFormData] = useState<FormData>({
     // Author Details
@@ -189,17 +202,27 @@ const BlogCreateContent = () => {
   const handleContinue = () => {
     if (currentStep === 1) {
       // Validate author details
-      if (
-        !formData.name ||
-        !formData.phoneNumber ||
-        !formData.emailAddress ||
-        !formData.linkedInProfileUrl ||
-        !formData.designation ||
-        !formData.educationLevel ||
-        !formData.department ||
-        !formData.fieldExperience
-      ) {
-        toast.error("Please fill all required fields");
+      const missing = (
+        [
+          ["Full name", formData.name],
+          ["Phone number", formData.phoneNumber],
+          ["Email address", formData.emailAddress],
+          ["LinkedIn profile URL", formData.linkedInProfileUrl],
+          ["Designation", formData.designation],
+          ["Education level", formData.educationLevel],
+          ["Department", formData.department],
+          ["Field experience", formData.fieldExperience],
+        ] as [string, string][]
+      )
+        .filter(([, value]) => !String(value ?? "").trim())
+        .map(([label]) => label);
+
+      if (missing.length > 0) {
+        toast.error(
+          missing.length === 1
+            ? `${missing[0]} is required.`
+            : `Still needed: ${missing.join(", ")}.`,
+        );
         return;
       }
       if (formData.name.trim().length < 5) {
@@ -308,12 +331,14 @@ const BlogCreateContent = () => {
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
+                aria-label="Full name"
                 placeholder="Full Name"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
                 className="bg-gray-100 border-0 rounded-lg p-4 h-14"
               />
               <Input
+                aria-label="Phone number"
                 placeholder="Phone Number"
                 value={formData.phoneNumber}
                 onChange={(e) =>
@@ -325,6 +350,7 @@ const BlogCreateContent = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
+                aria-label="Email address"
                 placeholder="Email Address"
                 type="email"
                 value={formData.emailAddress}
@@ -334,6 +360,7 @@ const BlogCreateContent = () => {
                 className="bg-gray-100 border-0 rounded-lg p-4 h-14"
               />
               <Input
+                aria-label="LinkedIn profile URL"
                 placeholder="LinkedIn Profile URL"
                 type="url"
                 value={formData.linkedInProfileUrl}
@@ -424,6 +451,7 @@ const BlogCreateContent = () => {
               </Select>
 
               <Input
+                aria-label="Field experience"
                 placeholder="Field Experience"
                 value={formData.fieldExperience}
                 onChange={(e) =>
@@ -671,6 +699,24 @@ const BlogCreateContent = () => {
             <h1 className="text-4xl md:text-5xl font-bold">
               Create your <span className="text-yellow-400">Article!</span>
             </h1>
+
+            {/* Publishing requires an account. Saying so here avoids letting
+                someone complete every step only to be refused at the end. */}
+            {!user && (
+              <p
+                role="status"
+                className="mx-auto mt-4 max-w-xl rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200"
+              >
+                You will need to{" "}
+                <Link
+                  to="/login?returnTo=%2Fblog-article"
+                  className="font-semibold underline"
+                >
+                  sign in
+                </Link>{" "}
+                before you can publish this article.
+              </p>
+            )}
           </div>
         </div>
       </div>
