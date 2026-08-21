@@ -1,4 +1,10 @@
-import React, { useState, createContext, useContext } from "react";
+import React, {
+  useState,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+} from "react";
 import { Button } from "@/components1/ui/button";
 import { Input } from "@/components1/ui/input";
 import {
@@ -9,7 +15,7 @@ import {
   SelectValue,
 } from "@/components1/ui/select";
 import { ArrowLeft, Share2, Upload, AlertTriangle } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Header from "@/components1/Header";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -59,21 +65,94 @@ const BlogStepperContext = createContext<BlogStepperContextType | undefined>(
   undefined,
 );
 
+const FIRST_STEP = 1;
+const LAST_STEP = 4;
+
+/**
+ * The wizard step lives in the URL (?step=2).
+ *
+ * It used to be component state, so moving forward changed nothing the browser
+ * could see: pressing Back did not return to the previous step, it left the
+ * article flow altogether and discarded everything typed. Each forward move now
+ * pushes a history entry, which is what makes the browser's own Back button
+ * step backwards through the form.
+ */
 const BlogStepperProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
-  const nextStep = () => {
-    setCurrentStep((prev) => Math.min(prev + 1, 4));
+  const requested = Number(searchParams.get("step"));
+  const currentStep =
+    Number.isInteger(requested) &&
+    requested >= FIRST_STEP &&
+    requested <= LAST_STEP
+      ? requested
+      : FIRST_STEP;
+
+  /**
+   * How many entries this wizard has pushed. BACK pops history when it can, so
+   * the in-page button and the browser button stay in agreement; when the count
+   * is spent - someone deep-linked to a later step - it rewrites the URL
+   * instead, so BACK can never walk off the page.
+   */
+  const pushed = useRef(0);
+
+  useEffect(() => {
+    const onPop = () => {
+      pushed.current = Math.max(0, pushed.current - 1);
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  /**
+   * A step is only reachable once the steps before it have been filled in.
+   *
+   * The form itself lives in memory, so opening ?step=3 in a fresh tab - or
+   * simply reloading on that step - used to render the later screens with
+   * every field blank and no hint of why. Checked once on mount: during normal
+   * use each step writes its answers to the cache before advancing, and this
+   * must not second-guess the visitor mid-flow.
+   */
+  useEffect(() => {
+    const hasAuthorDetails = Boolean(
+      queryClient.getQueryData(["blog", "authorDetails"]),
+    );
+    const hasContent = Boolean(queryClient.getQueryData(["blog", "content"]));
+    const furthestAllowed = !hasAuthorDetails ? 1 : !hasContent ? 2 : 3;
+
+    if (currentStep > furthestAllowed) {
+      const params = new URLSearchParams(window.location.search);
+      params.set("step", String(furthestAllowed));
+      setSearchParams(params, { replace: true });
+    }
+    // Mount only: see the note above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const goToStep = (step: number, push: boolean) => {
+    const target = Math.min(Math.max(step, FIRST_STEP), LAST_STEP);
+    const params = new URLSearchParams(searchParams);
+    params.set("step", String(target));
+    setSearchParams(params, { replace: !push });
+    if (push) pushed.current += 1;
   };
 
+  const nextStep = () => goToStep(currentStep + 1, true);
+
   const prevStep = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 1));
+    if (pushed.current > 0) {
+      pushed.current -= 1;
+      navigate(-1);
+      return;
+    }
+    goToStep(currentStep - 1, false);
   };
 
   const setActive = (step: number) => {
-    setCurrentStep(step + 1); // Convert 0-based to 1-based indexing
+    goToStep(step + 1, true); // Convert 0-based to 1-based indexing
   };
 
   return (

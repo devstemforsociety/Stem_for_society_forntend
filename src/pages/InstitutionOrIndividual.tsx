@@ -1,5 +1,6 @@
 import { useState, useEffect, createContext, useContext } from "react";
-import { useSearchParams } from "react-router-dom"; // Added this import
+import { useNavigate, useSearchParams } from "react-router-dom"; // Added this import
+import { ArrowLeft } from "lucide-react";
 
 
 // Navigation Components
@@ -45,6 +46,19 @@ export const useEnquiry = () => useContext(EnquiryContext);
 
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  /**
+   * Return to wherever the visitor came from, falling back to the homepage.
+   * React Router tracks its position in history as `idx`; at 0 there is
+   * nothing of ours to go back to - a deep link, or a fresh tab - and calling
+   * history.back() there would drop the visitor off the site entirely.
+   */
+  const goBack = () => {
+    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0;
+    if (idx > 0) navigate(-1);
+    else navigate("/");
+  };
 
   const modeParam = searchParams.get("mode");
   const mode: Mode = (modeParam === "institution" || modeParam === "individual") 
@@ -124,6 +138,22 @@ const Index = () => {
         </div>
         
         
+
+        {/* This page is reached from several places and had no way back.
+            Floated rather than placed in the flow: the pages own chrome (the
+            top pill and the bottom bar) is all fixed, and a block here pushed
+            every section down by its own height. Sits at the same top-6 as the
+            mode switcher so the two read as one row. The label collapses on
+            narrow screens, where the centred pill comes close to the edge. */}
+        <button
+          type="button"
+          onClick={goBack}
+          aria-label="Go back"
+          className="fixed left-4 top-6 z-[60] flex h-[45px] items-center gap-2 rounded-full bg-white/90 px-3 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-900/10 backdrop-blur transition hover:bg-white hover:text-slate-900 sm:left-6 sm:px-4"
+        >
+          <ArrowLeft className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span className="hidden sm:inline">Back</span>
+        </button>
 
         {/* Confirms a move between the Individual and Institutional views */}
         <ModeSwitchDialog
