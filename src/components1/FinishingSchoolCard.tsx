@@ -3,6 +3,7 @@ import { Badge } from "@/components1/ui/badge";
 import { Button } from "@/components1/ui/button";
 import { ArrowRight, Clock, MapPin, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { COURSE_IMAGE_FALLBACK, handleCourseImageError } from "@/lib/courseImage";
 
 interface FinishingSchoolCardProps {
   courseId: string;
@@ -38,9 +39,10 @@ const FinishingSchoolCard = ({
       {/* Image Section */}
       <div className="relative w-full h-[180px] sm:h-[220px] overflow-hidden bg-gray-100 flex items-center justify-center">
         <img
-          src={image}
+          src={image || COURSE_IMAGE_FALLBACK}
           alt={title}
           className="w-full h-auto max-h-full object-contain transition-transform duration-500 group-hover:scale-105"
+          onError={handleCourseImageError}
         />
       </div>
 

@@ -76,7 +76,14 @@ overflow-hidden transition-all duration-500
 bg-[#FF8FB0] hover:bg-[#FF7FA4] 
 cursor-pointer ${getCardClasses("finishing")}`}
             >
-              <Link to="/coming-soon">
+              {/* External site, so a plain anchor rather than a router Link.
+                  rel="noopener noreferrer" stops the new tab from reaching
+                  back into this one through window.opener. */}
+              <a
+                href="https://networkingbeyondcampus.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <img
                   src={asset2}
                   alt="Finishing School"
@@ -90,7 +97,7 @@ cursor-pointer ${getCardClasses("finishing")}`}
                     Where students can communicate with real-world experts
                   </p>
                 </div>
-              </Link>
+              </a>
             </div>
 
             {/* 3. Individuals Card */}

@@ -3,6 +3,7 @@ import { Calendar, ChevronRight } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
 import { FaLocationDot } from "react-icons/fa6";
+import { COURSE_IMAGE_FALLBACK, handleCourseImageError } from "@/lib/courseImage";
 
 interface EventCardProps {
   title: string;
@@ -32,9 +33,10 @@ const EventCard: React.FC<EventCardProps> = ({
       {/* Left Section: Poster */}
       <div className="flex-shrink-0 lg:w-[unset] w-full h-52 aspect-video mr-6 bg-gray-100 flex items-center justify-center">
         <img
-          src={posterUrl}
+          src={posterUrl || COURSE_IMAGE_FALLBACK}
           alt={title}
           className="w-full h-auto max-h-full object-contain object-center rounded-lg"
+          onError={handleCourseImageError}
         />
       </div>
 

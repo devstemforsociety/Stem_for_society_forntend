@@ -9,7 +9,6 @@ type AdminSignInForm = {
 };
 
 export default function AdminSignIn() {
-  const { user } = useAdmin();
   const navigate = useNavigate();
   const location = useLocation();
   const from =
@@ -20,11 +19,16 @@ export default function AdminSignIn() {
     password: "",
   });
 
-  const { signIn, isSigningIn } = useAdmin({
+  const { user, signIn, isSigningIn } = useAdmin({
     extraOnSuccess: () => navigate(from, { replace: true }),
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = (event: React.FormEvent) => {
+    // Without this the browser would navigate away on submit.
+    event.preventDefault();
+    // Sign-in shares one rate limit bucket with every other auth endpoint, so
+    // a submission that cannot possibly succeed must not spend an attempt.
+    if (!formData.email.trim() || !formData.password) return;
     signIn(formData);
   };
 
@@ -50,10 +54,12 @@ export default function AdminSignIn() {
               Enter your credentials to access the admin panel
             </Text>
           </div>
-          <div className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <TextInput
               label="Email Address"
               placeholder="admin@example.com"
+              type="email"
+              autoComplete="email"
               size="md"
               radius="md"
               name="email"
@@ -84,12 +90,11 @@ export default function AdminSignIn() {
               size="md"
               disabled={isSigningIn}
               type="submit"
-              onClick={handleSubmit}
               className="h-11 mt-6 font-semibold bg-blue-600 hover:bg-blue-700 transition-colors"
             >
               {isSigningIn ? "Signing in..." : "Sign In"}
             </Button>
-          </div>
+          </form>
         </div>
       </div>
     </div>

@@ -4,9 +4,11 @@ import { Card } from "@/components1/ui/card";
 import { ArrowRight } from "lucide-react";
 import { Icon } from "@iconify/react";
 import VectorIcon from "@/assets/Vector.png";
+import { COURSE_IMAGE_FALLBACK, handleCourseImageError } from "@/lib/courseImage";
 
 interface CourseCardProps {
-  image: string;
+  /** Cover image URL. Null/absent for courses that never got one. */
+  image?: string | null;
   category: string;
   tags: string[];
   title: string;
@@ -40,9 +42,10 @@ const CourseCard = ({
       {/* Image Section */}
       <div className="relative w-full md:w-[320px] h-[200px] md:h-[220px] flex-shrink-0 p-3 bg-gray-100 flex items-center justify-center">
         <img
-          src={image}
+          src={image || COURSE_IMAGE_FALLBACK}
           alt={title}
           className="w-full h-auto max-h-full object-contain rounded-xl"
+          onError={handleCourseImageError}
         />
         {/* Category Badge */}
         <Badge className="absolute top-5 left-5 bg-[#0389FF] text-white text-xs px-2.5 py-1 rounded-lg font-medium flex items-center gap-1.5 whitespace-nowrap">
