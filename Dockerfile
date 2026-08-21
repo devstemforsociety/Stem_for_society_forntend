@@ -2,9 +2,15 @@
 
 # This is a pnpm project. Building with npm would resolve a different
 # dependency tree than the one that is tested, so the build uses pnpm via
-# corepack (bundled with Node 20).
+# corepack (bundled with Node 22).
 
-FROM node:20-bookworm-slim AS builder
+# Node 22 is the floor, not a preference: @supabase/supabase-js 2.112 and its
+# transitive packages declare engines >=22.0.0. The browser supplies its own
+# WebSocket, so this is a build-time constraint here rather than the runtime
+# crash it causes in the API. Keep in sync with package.json engines, .nvmrc
+# and CI.
+
+FROM node:22-bookworm-slim AS builder
 WORKDIR /app
 RUN corepack enable
 
