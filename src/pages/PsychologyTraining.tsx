@@ -93,11 +93,11 @@ export default function PsychologyTraining() {
         <div className="p-4 space-y-3">
           <p className="text-justify text-gray-600">
             <span className="font-bold text-pink-800">Stem For Society</span>{" "}
-            Initiated to Support students with{" "}
+            supports students facing{" "}
             <span className="font-bold text-pink-800">
-              psychological problems
-            </span>{" "}
-            is essential for their well-being and academic success. Stem For
+              psychological challenges
+            </span>
+            , which is essential for their well-being and academic success. Stem For
             Society, establishing open communication channels allows students to
             express their feelings and seek help without stigma. Providing
             access to counselling services ensures that students receive

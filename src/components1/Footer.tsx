@@ -1,5 +1,5 @@
 import { Button } from "@/components1/ui/button";
-import { Twitter, Instagram, Linkedin, Youtube } from "lucide-react";
+import { Twitter, Instagram, Youtube } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -41,7 +41,10 @@ const Footer = () => {
                   </a>
                 </li>
                 <li>
-                  <a href="/career-counselling" className="hover:text-white">
+                  <a
+                    href="/insituion-individual?mode=institution"
+                    className="hover:text-white"
+                  >
                     Institutional
                   </a>
                 </li>
@@ -52,7 +55,7 @@ const Footer = () => {
               <ul className="space-y-1 text-blue-100">
                 <li>
                   <a href="/insituion-individual" className="hover:text-white">
-                    Plans and pricings
+                    Plans and Pricing
                   </a>
                 </li>
                 <li>
@@ -105,18 +108,18 @@ const Footer = () => {
           {/* Newsletter */}
           <div className="w-full lg:w-1/4">
             <h4 className="font-semibold mb-2">SUBSCRIBE</h4>
-            <input
-              type="text"
-              placeholder="First name"
-              className="w-full mb-2 px-3 py-1.5 rounded-lg bg-white text-gray-900 text-sm"
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full mb-2 px-3 py-1.5 rounded-lg bg-white text-gray-900 text-sm"
-            />
-            <Button className="bg-white text-blue-600 w-full text-sm py-1.5 hover:bg-blue-50">
-              Subscribe
+            <p className="text-blue-100 text-sm mb-2">
+              Get updates on new programs and workshops.
+            </p>
+            {/* No subscription endpoint exists yet, so this opens the user's
+                mail client rather than showing inputs that submit nowhere. */}
+            <Button
+              asChild
+              className="bg-white text-blue-600 w-full text-sm py-1.5 hover:bg-blue-50"
+            >
+              <a href="mailto:info@stemforsociety.org?subject=Newsletter%20subscription">
+                Subscribe
+              </a>
             </Button>
           </div>
         </div>
@@ -125,7 +128,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center mt-6 pt-4 border-t border-blue-300 text-blue-100 text-xs">
           <div className="text-center md:text-left">
             94 Kempegowda nagara, Herohalli, Bengaluru, Karnataka 560091 •
-            +918296155821 • info@stemforsociety.com
+            +918296155821 • info@stemforsociety.org
           </div>
           <div className="flex gap-3 mt-3 md:mt-0">
             <a
@@ -139,12 +142,6 @@ const Footer = () => {
               className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:scale-105"
             >
               <Instagram className="h-4 w-4 text-blue-600" />
-            </a>
-            <a
-              href="#"
-              className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:scale-105"
-            >
-              <Linkedin className="h-4 w-4 text-blue-600" />
             </a>
             <a
               href="https://www.youtube.com/@stemforsociety"
@@ -161,7 +158,7 @@ const Footer = () => {
             Privacy Policy
           </a>
           <a href="/terms-condition" className="text-blue-100 hover:text-white text-xs">
-            Terms and Condition
+            Terms and Conditions
           </a>
           <a href="/refund-policy" className="text-blue-100 hover:text-white text-xs">
             Refund Policy
@@ -169,7 +166,7 @@ const Footer = () => {
         </div>
         
         <div className="mt-4 text-center text-xs text-blue-200">
-          © 2025 STEM for Society. All rights reserved.
+          © {new Date().getFullYear()} STEM for Society. All rights reserved.
         </div>
       </div>
     </footer>

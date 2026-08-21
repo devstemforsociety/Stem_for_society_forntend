@@ -142,8 +142,8 @@ const PrivacyPolicy: React.FC = () => {
             title: "10. Contact Information",
             content: (
               <p>
-                Email: info@stemforsociety.in <br />
-                Website: www.stemforsociety.in/privacy
+                Email: info@stemforsociety.org <br />
+                Website: www.stemforsociety.org/privacy-policy
               </p>
             ),
           },

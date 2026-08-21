@@ -19,7 +19,7 @@ const HeroSection = () => {
     { 
       title: "Trained Individuals",
       subtitle: "Growth", 
-      description: "Much more students on our platform from the world",
+      description: "Students from across the world learning on our platform",
       stats: [
         { label: "Trained Students", value: "22,000+" }
       ],

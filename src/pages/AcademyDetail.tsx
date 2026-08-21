@@ -251,10 +251,17 @@ const AcademyDetail = () => {
 
   // Get formatted time range
   const getTimeRange = () => {
-    if (!course?.startDate || !course?.endDate) return "10:00 AM - 12:00 PM";
-    const startTime = dayjs(course.startDate).format("hh:mm A");
-    const endTime = dayjs(course.endDate).format("hh:mm A");
-    return `${startTime} - ${endTime}`;
+    // Never invent a schedule: this used to fall back to a hard-coded
+    // "10:00 AM - 12:00 PM", which showed buyers a time the course did not have.
+    if (!course?.startDate || !course?.endDate) return "Schedule to be announced";
+    const start = dayjs(course.startDate);
+    const end = dayjs(course.endDate);
+    // A course running across two days rendered as "06:30 PM - 06:30 PM", which
+    // reads as a mistake. When the range spans days, date-qualify both ends.
+    if (start.isSame(end, "day")) {
+      return `${start.format("hh:mm A")} - ${end.format("hh:mm A")}`;
+    }
+    return `${start.format("D MMM, hh:mm A")} - ${end.format("D MMM, hh:mm A")}`;
   };
 
   // Check if user is enrolled

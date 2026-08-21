@@ -180,7 +180,7 @@ const TermsConditions: React.FC = () => {
         {/* Footer */}
         <div className="border-t pt-6 mt-8 text-center">
           <p className="font-semibold text-black">
-            Questions? Contact: info@stemforsociety.in
+            Questions? Contact: info@stemforsociety.org
           </p>
         </div>
 

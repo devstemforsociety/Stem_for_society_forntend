@@ -87,7 +87,7 @@ export default function CampusAmbassador() {
       <p className="text-justify text-gray-600">
         Embrace the role of a{" "}
         <span className="font-bold text-pink-800">Stem For Society</span>{" "}
-        Initiated to Support students with ambassador at your college or
+        Campus Ambassador at your college or
         university and help us spread the excitement far and wide! As a Campus
         Ambassador, you will be instrumental in promoting the festival, engaging
         with fellow students, and infusing the spirit of Stem for Society into

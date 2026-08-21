@@ -54,6 +54,9 @@ const TestimonialsSection = () => {
             {[...testimonials, ...testimonials].map((testimonial, index) => (
               <Card
                 key={index}
+                /* Second pass is the marquee clone: shown, but not announced
+                   twice to screen readers or counted as extra testimonials. */
+                aria-hidden={index >= testimonials.length}
                 className="min-w-[320px] max-w-[340px] rounded-xl border-none flex-shrink-0"
                 style={{ backgroundColor: "#C0E1FF" ,color: "black",
         backgroundImage: `

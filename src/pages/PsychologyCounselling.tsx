@@ -65,8 +65,9 @@ const PsychologyCounselling = () => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end">
               <div className="p-6 md:p-8">
                 <p className="text-white text-sm md:text-base leading-relaxed max-w-2xl">
-                  Stem For Society Initiated to Support students with psychological problems is 
-                  essential for their well-being and academic success.
+                  STEM for Society supports students facing psychological
+                  challenges - essential for their well-being and academic
+                  success.
                 </p>
               </div>
             </div>

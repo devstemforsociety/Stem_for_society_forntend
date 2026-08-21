@@ -16,7 +16,7 @@ const RefundPolicy: React.FC = () => {
             Refund & Cancellation Policy
           </h1>
           <p className="text-sm text-gray-500 mt-2">
-            STEM for Society | Effective Date: January 2025
+            STEM for Society | Effective Date: January 2026
           </p>
         </div>
 
@@ -120,7 +120,7 @@ const RefundPolicy: React.FC = () => {
             content: (
               <>
                 <p className="mb-2">
-                  Email: info@stemforsociety.in
+                  Email: info@stemforsociety.org
                 </p>
                 <ul className="list-disc pl-6 space-y-2">
                   <li>Include name, phone number, registration ID, and reason</li>

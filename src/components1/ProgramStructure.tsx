@@ -115,7 +115,7 @@ cursor-pointer ${getCardClasses("finishing")}`}
 
                 <div className="relative z-10">
                   <h3 className="text-2xl sm:text-3xl md:text-4xl font-instrument mb-2 sm:mb-3 text-[#594D20] scale-y-[1.3] sm:scale-y-[1.5] inline-block">
-                    Individuals & Instituitions
+                    Individuals &amp; Institutions
                   </h3>
                   <p className="text-sm sm:text-base max-w-[180px] sm:max-w-[210px] md:max-w-[241px] pt-3">
                     Expert counselling to help you choose the right career path,

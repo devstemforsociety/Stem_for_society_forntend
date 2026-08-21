@@ -43,7 +43,26 @@ const OPTIONAL: EnvIssue[] = [
 
 function value(key: string): string {
   const raw = RAW[key];
-  return typeof raw === "string" ? raw.trim() : "";
+  if (typeof raw !== "string") return "";
+  const trimmed = raw.trim();
+  /**
+   * Strip one layer of wrapping quotes.
+   *
+   * A .env file has its quotes removed by the loader, so VALUE and "VALUE"
+   * behave identically there. A hosting dashboard (Vercel, Netlify) does not:
+   * whatever is pasted becomes the literal value, quotes included, and Vite
+   * bakes those quotes into the bundle. Production shipped a quoted anon key
+   * rather than a bare one, which Supabase rejects as an invalid API key -
+   * breaking Google sign-in in prod while every .env-based environment kept
+   * working.
+   */
+  const unquoted =
+    trimmed.length >= 2 &&
+    ((trimmed.startsWith(`"`) && trimmed.endsWith(`"`)) ||
+      (trimmed.startsWith("'") && trimmed.endsWith("'")))
+      ? trimmed.slice(1, -1).trim()
+      : trimmed;
+  return unquoted;
 }
 
 export type AppEnv = {
