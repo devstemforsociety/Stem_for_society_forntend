@@ -123,5 +123,9 @@
     "rules": {
       "@typescript-eslint/no-unused-vars": 0
     }
-  }
+  },
+  "engines": {
+    "node": ">=20 <21"
+  },
+  "packageManager": "pnpm@10.20.0"
 }
