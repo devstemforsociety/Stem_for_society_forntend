@@ -20,7 +20,7 @@ import { AdminBlogType } from "./AdminBlogs";
 import { PartnerTrainingResponse } from "../partner/PartnerTrainings";
 
 // Type definitions for applications
-type AdminPsychologyTrainings = {
+type AdminIndividualApplicationType = {
   id: string;
   name: string;
   email: string;
@@ -40,40 +40,6 @@ type AdminPsychologyTrainings = {
     createdAt: Date | null;
     updatedAt: Date | null;
     transactionId: string;
-    psychologyId: string;
-    transaction: {
-      id: string;
-      createdAt: Date | null;
-      updatedAt: Date | null;
-      txnNo: string | null;
-      paymentId: string | null;
-      orderId: string;
-      signature: string | null;
-      idempotencyId: string | null;
-      amount: string;
-      status: "pending" | "success" | "cancelled" | "failed" | null;
-    };
-  }[];
-};
-
-type AdminCareerCounsellingType = {
-  id: string;
-  firstName: string;
-  lastName: string | null;
-  email: string;
-  mobile: string;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  selectedDate: string;
-  selectedTime: string;
-  plan: "Basics" | "Premium" | null;
-  service: string | null;
-  transactions: {
-    id: string;
-    createdAt: Date | null;
-    updatedAt: Date | null;
-    transactionId: string;
-    careerId: string;
     transaction: {
       id: string;
       createdAt: Date | null;
@@ -179,24 +145,12 @@ function useAdminBlogsCount() {
 
 function useAdminIndividualApplications() {
   return useQuery<
-    GenericResponse<AdminPsychologyTrainings[]>,
+    GenericResponse<AdminIndividualApplicationType[]>,
     AxiosError<GenericError>
   >({
-    queryKey: ["admin", "enquiry", "psychology"],
+    queryKey: ["admin", "enquiry", "individual"],
     queryFn: async () =>
       (await api("adminAuth").get("/admin/applications/individual")).data,
-    staleTime: 1000 * 60 * 5,
-  });
-}
-
-function useAdminCareerApplications() {
-  return useQuery<
-    GenericResponse<AdminCareerCounsellingType[]>,
-    AxiosError<GenericError>
-  >({
-    queryKey: ["admin", "enquiry", "career"],
-    queryFn: async () =>
-      (await api("adminAuth").get("/admin/applications/career")).data,
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -236,8 +190,6 @@ export default function AdminHome() {
   const { data: blogsData, isLoading: blogsLoading } = useAdminBlogsCount();
   const { data: individualApps, isLoading: individualLoading } =
     useAdminIndividualApplications();
-  const { data: careerApps, isLoading: careerLoading } =
-    useAdminCareerApplications();
   const { data: caApps, isLoading: caLoading } = useAdminCAApplications();
   const { data: institutionApps, isLoading: institutionLoading } =
     useAdminInstitutionApplications();
@@ -254,14 +206,12 @@ export default function AdminHome() {
     let count = 0;
     // Individual applications - these don't have approvedBy field, so count all
     if (individualApps?.data) count += individualApps.data.length;
-    // Career applications - count all
-    if (careerApps?.data) count += careerApps.data.length;
     // CA applications - count all
     if (caApps?.data) count += caApps.data.length;
     // Institution applications - count all
     if (institutionApps?.data) count += institutionApps.data.length;
     return count;
-  }, [individualApps, careerApps, caApps, institutionApps]);
+  }, [individualApps, caApps, institutionApps]);
 
   // Calculate growth rate (placeholder - can be enhanced with date comparison)
   // const growthRate = useMemo(() => {
@@ -276,7 +226,6 @@ export default function AdminHome() {
     partnersLoading ||
     blogsLoading ||
     individualLoading ||
-    careerLoading ||
     caLoading ||
     institutionLoading;
 
@@ -313,7 +262,6 @@ export default function AdminHome() {
       link: "/admin/applications",
       loading:
         individualLoading ||
-        careerLoading ||
         caLoading ||
         institutionLoading,
     },

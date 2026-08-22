@@ -48,14 +48,10 @@ const PartnerTrainings = lazyWithRetry(() => import("./pages/partner/PartnerTrai
 const PartnerSignUp = lazyWithRetry(() => import("./pages/partner/PartnerWithUs"));
 const StudentDetails = lazyWithRetry(() => import("./pages/partner/StudentDetails"));
 const ForgotPassword = lazyWithRetry(() => import("./pages/forgotPassword"));
-const PsychologyTraining = lazyWithRetry(() => import("./pages/PsychologyTraining"));
 const SignUp = lazyWithRetry(() => import("./pages/Signup"));
 const Training = lazyWithRetry(() => import("./pages/Training"));
 const TrainingSpotlight = lazyWithRetry(() => import("./pages/TrainingSpotlight"));
-const CareerCounselling = lazyWithRetry(() => import("./pages/CareerCounselling"));
-const AdminCareerCounselling = lazyWithRetry(() => import("./pages/admin/AdminCareerCounselling"));
 const ExploreProgramDashboard = lazyWithRetry(() => import("./pages/ExploreProgramDashboard"));
-const PsychologyCounselling = lazyWithRetry(() => import("./pages/PsychologyCounselling"));
 const InstitutionPricing = lazyWithRetry(() => import("./pages/InstitutionPricing"));
 const CampusAmbassadorDash = lazyWithRetry(() => import("./pages/CampusAmbassadorDash"));
 const CampusAmbassadorBooking = lazyWithRetry(() => import("./pages/CampusAmbassadorBooking"));
@@ -69,8 +65,6 @@ const Community = lazyWithRetry(() => import("./pages/Community"));
 const Blog = lazyWithRetry(() => import("./pages/Blog"));
 const BlogArticle = lazyWithRetry(() => import("./pages/BlogArticle"));
 const BlogPost = lazyWithRetry(() => import("./pages/BlogPost"));
-const CareerCounsellingBookingFlow = lazyWithRetry(() => import("./pages/CareerCounsellingBookingFlow"));
-const PsychologyBookingFlow = lazyWithRetry(() => import("./pages/PsychologyBookingFlow"));
 const InstitutionBookingFlow = lazyWithRetry(() => import("./pages/InstitutionBookingFlow"));
 const InstitutionOrIndividual = lazyWithRetry(() => import("./pages/InstitutionOrIndividual"));
 const FinishingSchool = lazyWithRetry(() => import("./pages/FinishingSchool"));
@@ -82,6 +76,7 @@ const RefundPolicy = lazyWithRetry(() => import("./components1/RefundPolicy"));
 const TermsConditions = lazyWithRetry(() => import("./components1/TermsConditions"));
 const ComingSoon = lazyWithRetry(() => import("./components1/ComingSoon"));
 const NotFound = lazyWithRetry(() => import("./pages/404/NotFound").then(m => ({ default: m.NotFound })));
+const BareNotFound = () => <NotFound variant="bare" />;
 
 
 
@@ -271,22 +266,6 @@ function App() {
                 <Route path="/blog-article" element={<BlogArticle />} />
                 <Route path="/blog-post/:id" element={<BlogPost />} />
                 <Route
-                  path="/career-counselling-booking"
-                  element={<CareerCounsellingBookingFlow />}
-                />
-                <Route
-                  path="/mental-wellbeing"
-                  element={<PsychologyCounselling />}
-                />
-                <Route
-                  path="/career-counselling"
-                  element={<CareerCounselling />}
-                />
-                <Route
-                  path="/mental-wellbeing-counselling"
-                  element={<PsychologyBookingFlow />}
-                />
-                <Route
                   path="/institution-booking"
                   element={<InstitutionBookingFlow />}
                 />
@@ -329,10 +308,6 @@ function App() {
                 >
                   <Route index element={<AdminIndividual />} />
                   <Route
-                    path="career-counselling"
-                    element={<AdminCareerCounselling />}
-                  />
-                  <Route
                     path="ca-programs"
                     element={<AdminCampusAmbassador />}
                   />
@@ -340,7 +315,9 @@ function App() {
                     path="institutions"
                     element={<AdminInstitutionRegistrations />}
                   />
+                  <Route path="*" element={<BareNotFound />} />
                 </Route>
+                <Route path="*" element={<BareNotFound />} />
               </Route>
               <Route path="/partner" element={<PartnerLayout />}>
                 <Route index element={<PartnerHome />} />
@@ -362,6 +339,7 @@ function App() {
                   <Route index element={<PartnerSettings />} />
                   <Route path="account" element={<PartnerAccounts />} />
                 </Route>
+                <Route path="*" element={<BareNotFound />} />
               </Route>
             </Routes>
               </RouteErrorBoundary>

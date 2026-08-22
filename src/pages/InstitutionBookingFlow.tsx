@@ -544,7 +544,7 @@ const InstitutionBookingFlow = () => {
         currency: "INR",
         name: "Stem for Society",
         description: `${formData.plan} plan purchase`,
-        image: "https://stem-4-society.netlify.app/logo-01.png",
+        image: `${window.location.origin}/logo-01.png`,
         order_id: order.orderId,
         prefill: {
           name: formData.contactName + " - " + formData.schoolName,
@@ -923,8 +923,6 @@ const InstitutionBookingFlow = () => {
           </div>
           <p className="text-sm text-gray-600 mb-4">Essential Skills to Shape a Promising Future</p>
           <div className="space-y-2 mb-4 text-sm">
-            <div className="flex items-center"><span className="text-green-500 mr-2">✔</span>Career Counselling</div>
-            <div className="flex items-center"><span className="text-green-500 mr-2">✔</span>Psychology Counselling</div>
             <div className="flex items-center"><span className="text-green-500 mr-2">✔</span>Time Management Training</div>
             <div className="flex items-center"><span className="text-green-500 mr-2">✔</span>Personality Development</div>
           </div>
@@ -958,8 +956,6 @@ const InstitutionBookingFlow = () => {
           </div>
           <p className="text-sm text-gray-600 mb-4">Comprehensive Training for a Brighter Tomorrow</p>
           <div className="space-y-2 mb-4 text-sm">
-            <div className="flex items-center"><span className="text-green-500 mr-2">✔</span>Career Counselling</div>
-            <div className="flex items-center"><span className="text-green-500 mr-2">✔</span>Psychology Counselling</div>
             <div className="flex items-center"><span className="text-green-500 mr-2">✔</span>Sex Education</div>
             <div className="flex items-center"><span className="text-green-500 mr-2">✔</span>Entrepreneurship Training</div>
             <div className="flex items-center"><span className="text-green-500 mr-2">✔</span>Personality Development</div>
@@ -1330,7 +1326,7 @@ const InstitutionBookingFlow = () => {
           <p className="text-black mb-5">Book your Session</p>
             <h1 className="text-2xl md:text-3xl font-medium text-[#000000] relative inline-block">
               <span className="relative">
-                Career Counselling
+                Institution Plan
                 <span className="absolute bottom-1 left-0 w-full h-[30%] bg-yellow-300 -z-10"></span>
               </span>
             </h1>

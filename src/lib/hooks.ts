@@ -190,7 +190,6 @@ export function usePartner({ extraOnSuccess = () => null }: UseUserArgs = {}) {
       return response.data;
     },
     onSuccess: ({ data }) => {
-      console.log("🚀 ~ useUserPartner ~ data:", data);
       queryClient.setQueryData(["partnerAuth"], data);
       // Persist to localStorage with timestamp for expiry management
       const authData = {
@@ -287,7 +286,6 @@ export function useAdmin({ extraOnSuccess = () => null }: UseUserArgs = {}) {
       return response.data;
     },
     onSuccess: ({ data }) => {
-      console.log("🚀 ~ useAdmin ~ data:", data);
       queryClient.setQueryData(["adminAuth"], data);
       // Persist to localStorage with timestamp for expiry management
       const authData = {

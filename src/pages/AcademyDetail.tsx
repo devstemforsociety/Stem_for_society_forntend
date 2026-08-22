@@ -316,7 +316,7 @@ const AcademyDetail = () => {
         currency: "INR",
         name: "STEM For Society",
         description: course?.title || "Course Enrollment",
-        image: "https://stem-for-society.netlify.app/logo-01.png",
+        image: `${window.location.origin}/logo-01.png`,
         order_id: order.orderId,
         prefill: {
           name:

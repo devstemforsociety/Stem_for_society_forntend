@@ -11,7 +11,7 @@ import { api } from "../../lib/api";
 import { GenericError, GenericResponse } from "../../lib/types";
 import { formatDate, mutationErrorHandler } from "../../lib/utils";
 
-type AdminPsychologyTrainings = {
+type AdminIndividualApplicationType = {
   id: string;
   name : string,
   email: string;
@@ -31,7 +31,6 @@ type AdminPsychologyTrainings = {
     createdAt: Date | null;
     updatedAt: Date | null;
     transactionId: string;
-    psychologyId: string;
     transaction: {
       id: string;
       createdAt: Date | null;
@@ -47,25 +46,25 @@ type AdminPsychologyTrainings = {
   }[];
 };
 
-function useAdminPsychology() {
+function useAdminIndividualApplications() {
   return useQuery<
-    GenericResponse<AdminPsychologyTrainings[]>,
+    GenericResponse<AdminIndividualApplicationType[]>,
     AxiosError<GenericError>
   >({
-    queryKey: ["admin", "enquiry", "psychology"],
+    queryKey: ["admin", "enquiry", "individual"],
     queryFn: async () =>
       (await api("adminAuth").get("/admin/applications/individual")).data,
     staleTime: 1000 * 60 * 5,
   });
 }
 
-export default function AdminPsychology() {
-  const { data, isLoading, error } = useAdminPsychology();
+export default function AdminIndividual() {
+  const { data, isLoading, error } = useAdminIndividualApplications();
   const [search, setSearch] = useState<string | undefined>();
   const [activeRegistrationId, setActiveRegistrationId] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const filteredPsychology = useMemo(() => {
+  const filteredIndividual = useMemo(() => {
     if (!data) return [];
     return data.data.filter(
       (registration) =>
@@ -75,7 +74,7 @@ export default function AdminPsychology() {
           .includes(search?.toLowerCase() || "") ||
         registration.mobile.toLowerCase().includes(search?.toLowerCase() || ""),
     );
-  }, [data, search]); // Filter psychology based on search input
+  }, [data, search]); // Filter registrations based on search input
 
   useEffect(() => {
     if (error) mutationErrorHandler(error, navigate, "/admin/signin");
@@ -91,7 +90,7 @@ export default function AdminPsychology() {
   }
 
   const exportToCSV = () => {
-    if (!filteredPsychology.length) return;
+    if (!filteredIndividual.length) return;
     
     const headers = [
       "S.No", "Name", "Email", "Mobile", "Designation", "Organization", 
@@ -99,7 +98,7 @@ export default function AdminPsychology() {
       "Requirements", "Concerns", "Transaction ID", "Amount", "Payment Status"
     ];
     
-    const rows = filteredPsychology.map((r, i) => [
+    const rows = filteredIndividual.map((r, i) => [
       i + 1,
       r.name,
       r.email,
@@ -126,7 +125,7 @@ export default function AdminPsychology() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `psychology-registrations-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `individual-registrations-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -140,7 +139,7 @@ export default function AdminPsychology() {
               Individual Registrations
             </h1>
             <Text size="sm" c="dimmed" className="text-gray-500">
-              Total: {filteredPsychology.length} registrations
+              Total: {filteredIndividual.length} registrations
             </Text>
           </div>
           <Group className="flex-wrap">
@@ -161,7 +160,7 @@ export default function AdminPsychology() {
               variant="outline"
               radius="md"
               onClick={exportToCSV}
-              disabled={!filteredPsychology.length}
+              disabled={!filteredIndividual.length}
               className="h-10"
             >
               Export CSV
@@ -190,7 +189,7 @@ export default function AdminPsychology() {
                 body: "divide-y divide-gray-100",
                 row: "hover:bg-gray-50 transition-colors",
               }}
-              rows={filteredPsychology.map((r, i) => ({
+              rows={filteredIndividual.map((r, i) => ({
                 id: r.id,
                 cells: [
                   {

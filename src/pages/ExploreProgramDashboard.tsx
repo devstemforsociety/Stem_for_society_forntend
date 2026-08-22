@@ -10,7 +10,7 @@ const ExploreProgramDashboard = () => {
     {
       category: "Students (UG/PG/PhD), Job Seekers",
       title: "Individual",
-      description: "Expert counselling to help you choose the right career path, strengthen emotional resilience, and unlock your highest personal potential.",
+      description: "Expert guidance to help you build in-demand skills, strengthen your profile, and unlock your highest personal potential.",
       route: "/insituion-individual?mode=individual"
     },
     {

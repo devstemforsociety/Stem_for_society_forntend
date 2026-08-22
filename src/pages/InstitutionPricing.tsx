@@ -131,14 +131,6 @@ maskImage: 'linear-gradient(to bottom, black 0%, transparent 35%, transparent 10
             <div className="space-y-4 text-sm">
               <div className="flex items-center space-x-3">
                 <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                <span className="text-gray-600">Career Counselling</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                <span className="text-gray-600">Psychology Counselling</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
                 <span className="text-gray-600">Time Management Training</span>
               </div>
               <div className="flex items-center space-x-3">
@@ -167,14 +159,6 @@ maskImage: 'linear-gradient(to bottom, black 0%, transparent 35%, transparent 10
             </div>
 
             <div className="space-y-4 text-sm">
-              <div className="flex items-center space-x-3">
-                <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                <span className="text-gray-600">Career Counselling</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                <span className="text-gray-600">Psychology Counselling</span>
-              </div>
               <div className="flex items-center space-x-3">
                 <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
                 <span className="text-gray-600">Sex Education</span>

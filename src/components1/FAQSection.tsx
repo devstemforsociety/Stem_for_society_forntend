@@ -69,7 +69,7 @@ const FAQSection = () => {
     "Support and Resources": [
       { 
         question: "What support do you provide to students?", 
-        answer: "We offer mentorship, career counseling, psychology counseling, technical support, and access to our extensive library of resources." 
+        answer: "We offer mentorship, technical support, and access to our extensive library of resources." 
       },
       { 
         question: "Are resources available after program completion?", 

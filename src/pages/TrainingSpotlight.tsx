@@ -110,7 +110,6 @@ function TrainingSpotlight() {
       const rzrpyInit = await initializeRazorpay();
       if (!rzrpyInit) return toast.error("Unable to initialize payment!");
       const data = await mutateAsync();
-      console.log("🚀 ~ handlePayment ~ data:", data);
       if (!data.data) {
         toast.error("Something went wrong in creating payment!");
         return;
@@ -123,7 +122,7 @@ function TrainingSpotlight() {
         currency: "INR",
         name: "Stem for Society",
         description: "Premium plan purchase",
-        image: "https://stem-4-society.netlify.app/logo-01.png",
+        image: `${window.location.origin}/logo-01.png`,
         order_id: order.orderId,
         prefill: {
           name: user?.user.firstName,
@@ -133,19 +132,38 @@ function TrainingSpotlight() {
         async handler(response) {
           try {
             if ("error" in response) {
-              console.log("🚀 ~ handler ~ response:", response);
               // @ts-expect-error smh
               toast.error(clientSafeText(response.error.reason));
               queryClient.invalidateQueries({ queryKey: ["trainings"] });
               return;
             }
-            toast.success(
-              "Payment was made successfully and is being verified. We will get back to you shortly if verification fails",
+
+            /**
+             * Confirm the payment with our own server before claiming success.
+             * This page previously only showed a toast: the checkout callback
+             * is the one moment Razorpay hands us the signature, and
+             * /payments/verify-client is what flips the transaction from
+             * "pending" to "success". Without it, a course bought from here
+             * depended entirely on the webhook - the same purchase made from
+             * /course-detail worked, this one silently did not.
+             */
+            await api().post("/payments/verify-client", {
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+            });
+
+            toast.success("Payment successful - you are now enrolled.");
+
+            await queryClient.invalidateQueries({ queryKey: ["trainings"] });
+            await queryClient.invalidateQueries({ queryKey: ["trainings", id] });
+          } catch (error) {
+            console.error("Payment verification failed:", error);
+            toast.error(
+              "Your payment went through but could not be confirmed automatically. " +
+                "It will be reconciled shortly - please contact us if it does not appear.",
               { autoClose: false, closeOnClick: false },
             );
-          } catch (error) {
-            console.log("🚀 ~ handler ~ error:", error);
-            toast.error("Payment was made, but it could not be verified");
           }
         },
       };
@@ -176,11 +194,16 @@ function TrainingSpotlight() {
           return;
         }
       }
-      console.log("🚀 ~ handlePayment ~ error:", error);
-      // toast.error("Something went wrong in the paymnent process");
+      console.error("Payment could not be started:", error);
+      toast.error("Something went wrong starting the payment. Please try again.");
     }
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, []);
+    /**
+     * `user` and `mutateAsync` are read inside this callback. With an empty
+     * dependency array it closed over the values from the first render, so the
+     * Razorpay prefill went out empty whenever the profile finished loading
+     * after mount.
+     */
+  }, [user, mutateAsync, id]);
 
   if (isLoading) {
     return <Loading />;

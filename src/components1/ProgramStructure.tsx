@@ -118,8 +118,8 @@ cursor-pointer ${getCardClasses("finishing")}`}
                     Individuals &amp; Institutions
                   </h3>
                   <p className="text-sm sm:text-base max-w-[180px] sm:max-w-[210px] md:max-w-[241px] pt-3">
-                    Expert counselling to help you choose the right career path,
-                    strengthen emotional resilience, and unlock your highest
+                    Expert guidance to help you build in-demand skills,
+                    strengthen your profile, and unlock your highest
                     personal potential.
                   </p>
                 </div>

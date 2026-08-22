@@ -12,7 +12,7 @@ interface ModeSwitchDialogProps {
 const COPY: Record<Mode, { title: string; body: string; cta: string }> = {
   individual: {
     title: "Switch to Individual?",
-    body: "You will see services priced for one person - career counselling, mental well-being sessions and skill programs for students and working professionals.",
+    body: "You will see services priced for one person - skill programs and training for students and working professionals.",
     cta: "Switch to Individual",
   },
   institution: {

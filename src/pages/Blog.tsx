@@ -49,12 +49,17 @@ const Blog = () => {
   const { data: blogPosts, isLoading, error } = useBlog();
   const { isShowing, handleShare } = useShare();
   
-  if (error) { 
-    //@ts-expect-error - error is of type AxiosError
-    return <Errorbox message={error.response?.data.error || 'An error occurred'} />;
-  }
-  
-  const blogs = isLoading ? [] : blogPosts?.data || [];
+  /**
+   * Memoised so the identity is stable, and declared before any early return.
+   * The `if (error) return` used to sit above this hook, so a query going from
+   * success to error (a failed background refetch, or a retry) rendered fewer
+   * hooks than the previous pass and React tore the whole tree down with
+   * "rendered fewer hooks than expected".
+   */
+  const blogs = useMemo(
+    () => (isLoading ? [] : blogPosts?.data || []),
+    [isLoading, blogPosts],
+  );
 
   // Filter blogs based on search query with null/undefined checks
   const filteredBlogs = useMemo(() => {
@@ -102,6 +107,12 @@ const Blog = () => {
 
   // Check if there are no blogs at all (not just filtered results)
   const noBlogsAvailable = !isLoading && blogs.length === 0;
+
+  // Every hook above has run by this point, so returning early here is safe.
+  if (error) {
+    //@ts-expect-error - error is of type AxiosError
+    return <Errorbox message={error.response?.data.error || 'An error occurred'} />;
+  }
 
   // Show loading skeleton while data is loading
   if (isLoading) {

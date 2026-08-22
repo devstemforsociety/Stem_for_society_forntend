@@ -31,9 +31,6 @@ import { toastError } from "@/lib/utils";
 export type EnquiryMode = "individual" | "institution";
 
 type IndividualServiceType = 
-  | "career-counselling-full"
-  | "career-counselling-session"
-  | "mental-wellbeing"
   | "cv-resume-prep"
   | "sop-lor-editing"
   | "research-proposal"
@@ -41,10 +38,8 @@ type IndividualServiceType =
 
 type InstitutionalServiceType =
   | "comprehensive-package"
-  | "career-counselling"
   | "entrepreneurship"
   | "personality-development"
-  | "mental-wellbeing"
   | "digital-wellness"
   | "sex-education"
   | "single-theme";
@@ -120,9 +115,6 @@ interface EnquiryPopupProps {
 }
 
 const individualServices = [
-  { value: "career-counselling-full", label: "Career Counselling & Guidance (Full)" },
-  { value: "career-counselling-session", label: "Career Counselling (Single Session)" },
-  { value: "mental-wellbeing", label: "Mental Well-being" },
   { value: "cv-resume-prep", label: "CV/Resume Preparation" },
   { value: "sop-lor-editing", label: "SOP/LOR Editing & Preparation" },
   { value: "research-proposal", label: "Research Proposal Editing" },
@@ -131,10 +123,8 @@ const individualServices = [
 
 const institutionalServices = [
   { value: "comprehensive-package", label: "Comprehensive Package (Recommended)" },
-  { value: "career-counselling", label: "Career Counselling and Guidance" },
   { value: "entrepreneurship", label: "Entrepreneurship" },
   { value: "personality-development", label: "Attitude and Personality Development" },
-  { value: "mental-wellbeing", label: "Mental Well-being" },
   { value: "digital-wellness", label: "Digital Wellness & Social Media Awareness" },
   { value: "sex-education", label: "Sex Education" },
   { value: "single-theme", label: "Single-Theme Program" },
