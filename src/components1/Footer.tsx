@@ -1,5 +1,6 @@
 import { Button } from "@/components1/ui/button";
 import { Twitter, Instagram, Youtube } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -31,22 +32,22 @@ const Footer = () => {
               <h4 className="font-semibold mb-2">PROGRAMS</h4>
               <ul className="space-y-1 text-blue-100">
                 <li>
-                  <a href="/skill-development" className="hover:text-white">
+                  <Link to="/skill-development" className="hover:text-white">
                     Skill Development
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/mental-wellbeing" className="hover:text-white">
+                  <Link to="/insituion-individual?mode=individual" className="hover:text-white">
                     Individual
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="/insituion-individual?mode=institution"
+                  <Link
+                    to="/insituion-individual?mode=institution"
                     className="hover:text-white"
                   >
                     Institutional
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -54,14 +55,14 @@ const Footer = () => {
               <h4 className="font-semibold mb-2">FOR INSTITUTIONS</h4>
               <ul className="space-y-1 text-blue-100">
                 <li>
-                  <a href="/insituion-individual" className="hover:text-white">
+                  <Link to="/insituion-individual?mode=institution" className="hover:text-white">
                     Plans and Pricing
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/campus-ambassador" className="hover:text-white">
+                  <Link to="/campus-ambassador" className="hover:text-white">
                     Campus Ambassador Program
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -69,18 +70,21 @@ const Footer = () => {
               <h4 className="font-semibold mb-2">COMMUNITY</h4>
               <ul className="space-y-1 text-blue-100">
                 <li>
-                  <a href="/community" className="hover:text-white">
+                  <Link to="/community" className="hover:text-white">
                     Join Community
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/blog" className="hover:text-white">
+                  <Link to="/blog" className="hover:text-white">
                     Scientific Blog
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a
                     href="https://www.youtube.com/@stemforsociety"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="STEM for Society on YouTube"
                     className="hover:text-white"
                   >
                     YouTube Channel
@@ -92,14 +96,14 @@ const Footer = () => {
               <h4 className="font-semibold mb-2">QUICK LINKS</h4>
               <ul className="space-y-1 text-blue-100">
                 <li>
-                  <a href="/signup" className="hover:text-white">
+                  <Link to="/signup" className="hover:text-white">
                     Register
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a href="/login" className="hover:text-white">
+                  <Link to="/login" className="hover:text-white">
                     Login
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div> */}
@@ -133,18 +137,27 @@ const Footer = () => {
           <div className="flex gap-3 mt-3 md:mt-0">
             <a
               href="https://twitter.com/EmpoweringSci"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="STEM for Society on X (Twitter)"
               className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:scale-105"
             >
               <Twitter className="h-4 w-4 text-blue-600" />
             </a>
             <a
-              href="https://www.instagram.com/esf_life_science_jobs/"
+              href="https://www.instagram.com/stemforsociety_official/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="STEM for Society on Instagram"
               className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:scale-105"
             >
               <Instagram className="h-4 w-4 text-blue-600" />
             </a>
             <a
               href="https://www.youtube.com/@stemforsociety"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="STEM for Society on YouTube"
               className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:scale-105"
             >
               <Youtube className="h-4 w-4 text-blue-600" />
@@ -154,15 +167,15 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="flex justify-center gap-4 flex-wrap border-blue-300 pt-4 pb-3 mb-3">
-          <a href="/privacy-policy" className="text-blue-100 hover:text-white text-xs">
+          <Link to="/privacy-policy" className="text-blue-100 hover:text-white text-xs">
             Privacy Policy
-          </a>
-          <a href="/terms-condition" className="text-blue-100 hover:text-white text-xs">
+          </Link>
+          <Link to="/terms-condition" className="text-blue-100 hover:text-white text-xs">
             Terms and Conditions
-          </a>
-          <a href="/refund-policy" className="text-blue-100 hover:text-white text-xs">
+          </Link>
+          <Link to="/refund-policy" className="text-blue-100 hover:text-white text-xs">
             Refund Policy
-          </a>
+          </Link>
         </div>
         
         <div className="mt-4 text-center text-xs text-blue-200">

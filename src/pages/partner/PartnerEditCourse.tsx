@@ -62,7 +62,15 @@ const courseFormSchema = z.object({
       }),
     )
     .optional(),
-});
+})
+  /**
+   * An online course is unattendable without a joining link, so it must not
+   * be saved without one. Mirrors the same rule on the create form and API.
+   */
+  .refine((v) => v.type !== "ONLINE" || Boolean(v.link && v.link.trim()), {
+    path: ["link"],
+    message: "A meeting link is required for online courses",
+  });
 
 type CourseFormValues = z.infer<typeof courseFormSchema>;
 
@@ -335,6 +343,7 @@ export default function PartnerEditCourse() {
                         {form.values.type === "ONLINE" ? (
                           <TextInput
                             label="Meeting Link"
+                            withAsterisk={form.values.type === "ONLINE"}
                             placeholder="Zoom/Meet URL"
                             {...form.getInputProps("link")}
                             radius="md"

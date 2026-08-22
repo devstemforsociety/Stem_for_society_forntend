@@ -25,6 +25,7 @@ import { initializeRazorpay } from "@/lib/utils";
 import { RZPY_KEYID } from "@/Constants";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { toastError } from "@/lib/utils";
 
 
 export type EnquiryMode = "individual" | "institution";
@@ -160,9 +161,13 @@ function useSubmitEnquiry() {
       return response.data;
     },
     onError: (err) => {
-      console.error(" Enquiry submission error:", err);
-      const errorMsg = err.response?.data?.message || "Failed to submit enquiry";
-      toast.error(errorMsg);
+      /**
+       * Route this through the shared handler rather than echoing the server
+       * body. A raw message is fine for a 4xx we wrote ourselves, but on a 5xx
+       * it can carry driver text or a stack fragment straight to a student -
+       * the taxonomy suppresses those and shows plain language instead.
+       */
+      toastError(err, "Failed to submit enquiry");
     },
   });
 }

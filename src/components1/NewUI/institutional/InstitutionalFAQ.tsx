@@ -4,7 +4,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components1/ui/accordion";
-import { MessageCircle } from "lucide-react";
 
 const faqs = [
   {
@@ -49,17 +48,6 @@ export const InstitutionalFAQ = () => {
           ))}
         </Accordion>
 
-        {/* Contact Buttons */}
-        <div className="flex justify-center gap-4 mt-12">
-          <button className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-slate-200 text-slate-700 hover:bg-white transition-colors text-sm font-medium">
-            <MessageCircle className="w-4 h-4" />
-            WhatsApp
-          </button>
-          <button className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-900 text-white hover:bg-slate-800 transition-colors text-sm font-medium">
-            <MessageCircle className="w-4 h-4" />
-            Dashboard
-          </button>
-        </div>
       </div>
     </section>
   );

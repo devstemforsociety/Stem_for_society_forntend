@@ -1,4 +1,9 @@
+import { useState } from "react";
+import EnquiryPopup from "../EnquiryPopup";
+
 export const IndividualCTA = () => {
+  const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
+
   return (
     <section className="py-24 md:py-32 lg:py-40 bg-slate-900 text-white text-center relative overflow-hidden isolate">
       {/* Background Effects */}
@@ -16,18 +21,24 @@ export const IndividualCTA = () => {
         <p className="text-slate-300 max-w-2xl mx-auto mb-12 text-lg md:text-xl leading-relaxed font-light">
           If you want a custom service or a package tailored to your specific goals, please contact us. We're here to build the perfect path for you.
         </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-6">
-          <button className="group bg-white text-slate-900 hover:bg-slate-100 text-lg px-10 h-16 rounded-full font-bold shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.5)] transition-all duration-300 transform hover:-translate-y-1">
+        <div className="flex justify-center">
+          <button
+            type="button"
+            onClick={() => setIsEnquiryOpen(true)}
+            className="group bg-white text-slate-900 hover:bg-slate-100 text-lg px-10 h-16 rounded-full font-bold shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.5)] transition-all duration-300 transform hover:-translate-y-1"
+          >
             Request Custom Plan
-          </button>
-          <button className="border border-slate-700 bg-transparent text-white hover:bg-slate-800 hover:border-slate-600 text-lg px-10 h-16 rounded-full font-medium backdrop-blur-sm transition-all duration-300 hover:-translate-y-1">
-            Contact Support
           </button>
         </div>
         <p className="mt-12 text-sm text-slate-500 font-medium tracking-wide uppercase">
           Free 15-minute discovery call included
         </p>
       </div>
+      <EnquiryPopup
+        isOpen={isEnquiryOpen}
+        onClose={() => setIsEnquiryOpen(false)}
+        mode="individual"
+      />
     </section>
   );
 };

@@ -82,14 +82,43 @@ function useTrainings() {
       const response = await api().get<GenericResponse<StudentTraining[]>>("/trainings");
       
       if (!response.data?.data?.length) return {};
-      
-      const groupedByMonth = response.data.data.reduce((acc, training) => {
-        const monthYear = dayjs(training.startDate).format("MMMM YYYY");
-        if (!acc[monthYear]) acc[monthYear] = [];
-        acc[monthYear].push(training);
-        return acc;
-      }, {} as { [key: string]: StudentTraining[] });
-      
+
+      /**
+       * Chronological, earliest first.
+       *
+       * The API returns newest-first and this only grouped by month, so the
+       * page inherited that order and read backwards. Sorting here rather than
+       * relying on the API keeps the page correct regardless of how the
+       * endpoint is ordered later.
+       */
+      const undated: StudentTraining[] = [];
+      const dated: StudentTraining[] = [];
+
+      for (const training of response.data.data) {
+        const start = dayjs(training.startDate);
+        (training.startDate && start.isValid() ? dated : undated).push(training);
+      }
+
+      dated.sort((a, b) => dayjs(a.startDate).valueOf() - dayjs(b.startDate).valueOf());
+
+      // Object keys keep insertion order for non-numeric strings, so building
+      // the groups in sorted order is what makes the months read in sequence.
+      const groupedByMonth = dated.reduce(
+        (acc, training) => {
+          const monthYear = dayjs(training.startDate).format("MMMM YYYY");
+          if (!acc[monthYear]) acc[monthYear] = [];
+          acc[monthYear].push(training);
+          return acc;
+        },
+        {} as { [key: string]: StudentTraining[] },
+      );
+
+      // A missing date used to produce a group headed "Invalid Date"; keep
+      // those together at the end under a heading that says what they are.
+      if (undated.length > 0) {
+        groupedByMonth["Date to be announced"] = undated;
+      }
+
       return groupedByMonth;
     },
     staleTime: 1000 * 60 * 5,

@@ -21,6 +21,53 @@
 import type { AppError } from "./errors";
 import { normalizeError } from "./errors";
 import { getViewerIdentity } from "./viewer";
+import { API_URL } from "../Constants";
+import { useEffect } from "react";
+import {
+  createRoutesFromChildren,
+  matchRoutes,
+  useLocation,
+  useNavigationType,
+} from "react-router-dom";
+
+/**
+ * Send the technical detail to our own API as well as Sentry.
+ *
+ * The visitor only ever sees plain language plus a short reference id. That id
+ * is worthless unless the detail behind it is recorded somewhere, and Sentry is
+ * off whenever VITE_SENTRY_DSN is unset - which is the case in production
+ * today, so nothing was being kept at all.
+ *
+ * Never awaited and never allowed to throw: reporting a problem must not become
+ * a second problem. keepalive lets the report survive the page being closed.
+ */
+function sendToBackend(error: AppError, context: ReportContext): void {
+  try {
+    const body = JSON.stringify({
+      correlationId: error.correlationId,
+      code: error.code,
+      kind: error.kind,
+      status: error.status,
+      // Already scrubbed of tokens and query strings by normalizeError.
+      technical: error.technical?.slice(0, 500),
+      source: context.source,
+      route: typeof window === "undefined" ? undefined : window.location.pathname,
+      role: getViewerIdentity().role,
+      appVersion: import.meta.env.VITE_APP_VERSION,
+    });
+
+    void fetch(`${API_URL}/client-errors`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: true,
+    }).catch(() => {
+      /* the network is exactly what tends to be broken here */
+    });
+  } catch {
+    /* never let reporting throw into app code */
+  }
+}
 
 type SentryModule = typeof import("@sentry/react");
 
@@ -132,7 +179,21 @@ export function initObservability(): void {
           import.meta.env.VITE_SENTRY_ENVIRONMENT ?? import.meta.env.MODE,
         release: import.meta.env.VITE_APP_VERSION || undefined,
         integrations: [
-          mod.browserTracingIntegration(),
+          /**
+           * Router-aware tracing. The plain browserTracingIntegration names
+           * every transaction after the raw URL, so /course-detail/<uuid>
+           * becomes its own unrecognisable entry; this reports the route
+           * pattern instead and gives real navigation spans. The app uses
+           * BrowserRouter with <Routes>, which is the hooks form rather than
+           * the data-router wrapper.
+           */
+          mod.reactRouterV7BrowserTracingIntegration({
+            useEffect,
+            useLocation,
+            useNavigationType,
+            createRoutesFromChildren,
+            matchRoutes,
+          }),
           ...(replayEnabled
             ? [mod.replayIntegration({ maskAllText: true, blockAllMedia: true })]
             : []),
@@ -140,6 +201,15 @@ export function initObservability(): void {
         tracesSampleRate: Number.isFinite(tracesSampleRate)
           ? tracesSampleRate
           : 0.1,
+        /**
+         * Which requests carry the trace header onward. The API lives on a
+         * different origin, so without naming it here a trace stops at the
+         * browser and never joins up with the backend request it caused.
+         */
+        tracePropagationTargets: [
+          "localhost",
+          ...(API_URL ? [API_URL] : []),
+        ],
         // Replays are the scarcest free-tier resource: capture them only for
         // sessions that actually errored, and only when explicitly turned on.
         replaysSessionSampleRate: 0,
@@ -223,6 +293,8 @@ export function reportError(
   }
 
   if (shouldReport) {
+    sendToBackend(error, context);
+
     run(() => {
       sentry?.withScope((scope) => {
         scope.setTag("error.kind", error.kind);
