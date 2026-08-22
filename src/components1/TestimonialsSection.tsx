@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components1/ui/card";
 import { Quote } from "lucide-react";
+import logoWatermark from "@/assets/logo.webp";
 
 const TestimonialsSection = () => {
   const testimonials = [
@@ -61,7 +62,7 @@ const TestimonialsSection = () => {
                 style={{ backgroundColor: "#C0E1FF" ,color: "black",
         backgroundImage: `
           linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)),
-          url(${"src/assets/logo.webp"})
+          url(${logoWatermark})
         `,
         backgroundSize: "cover",}}
               >

@@ -11,7 +11,11 @@ export default defineConfig({
         manualChunks: {
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-supabase': ['@supabase/supabase-js'],
-          'vendor-ui': ['@mantine/core', '@mantine/hooks', '@radix-ui/react-dialog', '@radix-ui/react-popover', 'lucide-react', 'framer-motion'],
+          // lucide-react and framer-motion are deliberately NOT listed. Naming a
+          // package here forces it into a chunk every page downloads; left out,
+          // Rollup tree-shakes them into just the route chunks that use them.
+          'vendor-mantine': ['@mantine/core', '@mantine/hooks'],
+          'vendor-radix': ['@radix-ui/react-dialog', '@radix-ui/react-popover'],
           'vendor-utils': ['axios', 'date-fns', 'dayjs', 'zod', 'react-hook-form', '@tanstack/react-query'],
           'vendor-icons': ['react-icons'],
           'vendor-charts': ['recharts']

@@ -40,6 +40,7 @@ import { useUser } from "@/lib/hooks";
 import { RZPY_KEYID } from "@/Constants";
 import { Rating, Textarea } from "@mantine/core";
 import { FaLinkedin } from "react-icons/fa";
+import { formatCourseLocation } from "@/lib/course";
 
 dayjs.extend(utc);
 
@@ -549,7 +550,7 @@ const AcademyDetail = () => {
                   <div className="min-w-0 flex-1">
                     <p className="text-xs text-gray-500 font-medium">Location</p>
                     <p className="text-sm md:text-base font-semibold text-gray-900 whitespace-normal leading-snug">
-                      {course.type === 'ONLINE' ? 'Online Session' : (course.location || "Rangoli Metro Art Centre, Bangalore")}
+                      {formatCourseLocation(course.type, course.location)}
                     </p>
                   </div>
                 </div>
@@ -958,9 +959,7 @@ const AcademyDetail = () => {
               Location
             </h4>
             <p className="text-gray-600 text-xs md:text-sm px-2">
-              {course.type === 'ONLINE' 
-                ? 'Online Session' 
-                : (course.location || 'Rangoli Metro Art Centre, Bangalore')}
+              {formatCourseLocation(course.type, course.location)}
             </p>
           </div>
           <div className="bg-white rounded-2xl p-4 md:p-6 text-center shadow-sm">

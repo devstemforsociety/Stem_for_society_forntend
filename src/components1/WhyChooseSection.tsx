@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { Globe, Users, Award, Building, HeadphonesIcon } from "lucide-react";
+import logoWatermark from "@/assets/logo.webp";
 
 const WhyChooseSection = () => {
   const [activeItem, setActiveItem] = useState<number>(0);
@@ -52,7 +53,7 @@ const WhyChooseSection = () => {
             <div 
               className="absolute w-72 h-72 md:w-80 md:h-80 opacity-15 bg-center bg-no-repeat bg-contain pointer-events-none"
               style={{ 
-                backgroundImage: `url("src/assets/logo.webp")`,
+                backgroundImage: `url(${logoWatermark})`,
                 transform: 'translateZ(0)'
               }}
             />

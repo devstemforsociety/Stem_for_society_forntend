@@ -31,6 +31,7 @@ import {
 } from "../../lib/utils";
 import { PartnerTraining } from "./PartnerTrainings";
 import ReactPlayer from "react-player";
+import { formatCourseLocation } from "@/lib/course";
 
 type PartnerTrainings = PartnerTraining & {
   enrolments: {
@@ -476,7 +477,7 @@ export default function PartnerCourseDetails() {
                         Location
                       </Text>
                       <Text size="sm" fw={500}>
-                        {event.location || "N/A"}
+                        {formatCourseLocation(event.type, event.location)}
                       </Text>
                     </div>
                     <div>
