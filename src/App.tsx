@@ -87,6 +87,7 @@ const NotFound = lazyWithRetry(() => import("./pages/404/NotFound").then(m => ({
 
 
 import { queryClient } from "./lib/api";
+import ScrollToTop from "./components/ScrollToTop";
 
 
 
@@ -218,6 +219,8 @@ function App() {
                   crash in a layout itself. Layout-level boundaries handle the
                   ordinary case and keep the chrome on screen. */}
               <RouteErrorBoundary variant="page" source="route-root">
+              {/* Every route change starts at the top of the new page. */}
+              <ScrollToTop />
               <Routes>
               <Route path="/" element={<AppLayout />}>
                 <Route index element={<Home />} />
