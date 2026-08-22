@@ -12,7 +12,11 @@ import { GenericError, GenericResponse } from "../../lib/types";
 import { formatDate, mutationErrorHandler } from "../../lib/utils";
 import { Blog } from "../BlogListing";
 
-export type AdminBlogType = Blog & { approvedBy: string };
+export type AdminBlogType = Blog & {
+  approvedBy: string | null;
+  /** Set when a moderator turned this down; null means it is still pending. */
+  rejectedAt: string | null;
+};
 
 function useAdminBlogs() {
   return useQuery<GenericResponse<AdminBlogType[]>, AxiosError<GenericError>>({
@@ -156,11 +160,21 @@ export default function AdminBlogs() {
                   {
                     render: (
                       <Badge
-                        color={r.approvedBy ? "green" : "yellow"}
+                        color={
+                          r.approvedBy
+                            ? "green"
+                            : r.rejectedAt
+                              ? "red"
+                              : "yellow"
+                        }
                         variant="light"
                         size="sm"
                       >
-                        {r.approvedBy ? "Approved" : "Pending"}
+                        {r.approvedBy
+                          ? "Approved"
+                          : r.rejectedAt
+                            ? "Rejected"
+                            : "Pending"}
                       </Badge>
                     ),
                     className: "text-center",

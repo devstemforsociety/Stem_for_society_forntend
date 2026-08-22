@@ -8,6 +8,10 @@ const tabs = [
     url: "/admin/applications/institutions",
     title: "Institution Applications",
   },
+  {
+    url: "/admin/applications/institution-plans",
+    title: "Institution Plans",
+  },
   { url: "/admin/applications/ca-programs", title: "Campus Ambassador" },
 ];
 

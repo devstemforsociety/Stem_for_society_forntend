@@ -2,6 +2,7 @@ import RouteErrorBoundary from "../components/error/RouteErrorBoundary";
 import { Avatar, Button, Menu, Text } from "@mantine/core";
 import {
   BookOpen,
+  CalendarClock,
   FileText,
   GraduationCap,
   LayoutDashboard,
@@ -45,6 +46,11 @@ const AdminNavLinks = [
     label: "Applications",
     url: "/admin/applications",
     icon: UserCheck,
+  },
+  {
+    label: "Schedules",
+    url: "/admin/schedules",
+    icon: CalendarClock,
   },
   {
     label: "Blogs",

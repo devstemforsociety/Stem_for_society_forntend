@@ -1,4 +1,4 @@
-import { Button, Text } from "@mantine/core";
+import { Badge, Button, Text } from "@mantine/core";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { ChevronLeft } from "lucide-react";
@@ -14,7 +14,9 @@ import { mutationErrorHandler } from "../../lib/utils";
 import { Blog } from "../BlogListing";
 
 export type AdminBlogDetails = Blog & {
-  approvedBy: string;
+  approvedBy: string | null;
+  /** Set when a moderator turned this down; null means it is still pending. */
+  rejectedAt: string | null;
   blogAuthor: Blog["blogAuthor"] & {
     linkedin: string;
     mobile: string;
@@ -93,8 +95,25 @@ export default function AdminBlogSpotlight() {
             <h1 className="text-3xl font-bold text-gray-900 mb-4 sm:mb-0">
               {blog.title}
             </h1>
-            <div>
-              {!blog.approvedBy ? (
+            {/* Both actions stay available. Rejecting used to be reachable
+                only from an approved article, so a pending submission could be
+                approved but never turned down - and a rejection was
+                indistinguishable from "not reviewed yet" once made. */}
+            <div className="flex items-center gap-3">
+              {blog.approvedBy ? (
+                <Badge color="green" variant="light" size="lg">
+                  Approved
+                </Badge>
+              ) : blog.rejectedAt ? (
+                <Badge color="red" variant="light" size="lg">
+                  Rejected
+                </Badge>
+              ) : (
+                <Badge color="yellow" variant="light" size="lg">
+                  Pending review
+                </Badge>
+              )}
+              {!blog.approvedBy && (
                 <Button
                   radius="md"
                   variant="filled"
@@ -103,18 +122,19 @@ export default function AdminBlogSpotlight() {
                   disabled={isPending || isLoading}
                   size="md"
                 >
-                  Approve Blog
+                  Approve
                 </Button>
-              ) : (
+              )}
+              {!blog.rejectedAt && (
                 <Button
                   radius="md"
-                  variant="filled"
+                  variant="outline"
                   color="red"
                   onClick={() => mutate("reject")}
                   disabled={isPending || isLoading}
                   size="md"
                 >
-                  Reject Blog
+                  Reject
                 </Button>
               )}
             </div>

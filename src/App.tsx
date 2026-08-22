@@ -20,6 +20,7 @@ const AdminBlogSpotlight = lazyWithRetry(() => import("./pages/admin/AdminBlogSp
 const AdminCampusAmbassador = lazyWithRetry(() => import("./pages/admin/AdminCampusAmbassador"));
 const AdminHome = lazyWithRetry(() => import("./pages/admin/AdminHome"));
 const AdminInstitutionRegistrations = lazyWithRetry(() => import("./pages/admin/AdminInstitutionPlan"));
+const AdminInstitutionPlanBookings = lazyWithRetry(() => import("./pages/admin/AdminInstitutionPlanBookings"));
 const AdminPartners = lazyWithRetry(() => import("./pages/admin/AdminParnters"));
 const AdminPartnerDetails = lazyWithRetry(() => import("./pages/admin/AdminPartnerDetails"));
 const AdminIndividual = lazyWithRetry(() => import("./pages/admin/AdminIndividual"));
@@ -314,6 +315,10 @@ function App() {
                   <Route
                     path="institutions"
                     element={<AdminInstitutionRegistrations />}
+                  />
+                  <Route
+                    path="institution-plans"
+                    element={<AdminInstitutionPlanBookings />}
                   />
                   <Route path="*" element={<BareNotFound />} />
                 </Route>
