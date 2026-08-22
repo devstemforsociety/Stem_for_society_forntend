@@ -202,14 +202,21 @@ export function initObservability(): void {
           ? tracesSampleRate
           : 0.1,
         /**
-         * Which requests carry the trace header onward. The API lives on a
-         * different origin, so without naming it here a trace stops at the
-         * browser and never joins up with the backend request it caused.
+         * Which requests carry the trace header onward.
+         *
+         * Naming the API here makes the SDK add sentry-trace and baggage
+         * headers to every call. The API allowlists request headers, so until
+         * it admits those two, adding them fails CORS preflight and breaks
+         * EVERY request from the browser - which is exactly what happened.
+         *
+         * Off by default for that reason, mirroring VITE_SEND_CORRELATION_HEADER.
+         * Deploy the API with "sentry-trace" and "baggage" in allowedHeaders,
+         * then set VITE_SENTRY_TRACE_API=true to join browser and server traces.
          */
-        tracePropagationTargets: [
-          "localhost",
-          ...(API_URL ? [API_URL] : []),
-        ],
+        tracePropagationTargets:
+          import.meta.env.VITE_SENTRY_TRACE_API === "true"
+            ? ["localhost", ...(API_URL ? [API_URL] : [])]
+            : [],
         // Replays are the scarcest free-tier resource: capture them only for
         // sessions that actually errored, and only when explicitly turned on.
         replaysSessionSampleRate: 0,
