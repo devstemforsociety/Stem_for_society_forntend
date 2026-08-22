@@ -47,6 +47,12 @@ export type AccountType = {
   rzpyBankAcctId: string | null;
   rzpyVPAId: string | null;
   rzpyCardId: string | null;
+  /** Payout details as the partner entered them; payouts are made manually. */
+  upiId: string | null;
+  bankAccountName: string | null;
+  bankName: string | null;
+  bankIfsc: string | null;
+  bankAccountNumber: string | null;
   bankAccVerifiedOn: string;
   VPAVerifiedOn: Date | string | null;
   cardVerifiedOn: Date | string | null;
@@ -256,38 +262,65 @@ function AdminPartnerDetails() {
                     : "Pending"}
                 </Badge>
               </div>
-              <div>
-                <Text size="xs" c="dimmed">Razorpay Contact ID</Text>
-                <Text size="xs" fw={500} className="text-gray-900 font-mono">
-                  {partner?.account?.rzpyContactId || "N/A"}
+              {/*
+                * What a person needs in order to make the transfer by hand.
+                * This replaced the Razorpay contact/fund-account ids, which
+                * are no longer created and were never payable information.
+                */}
+              {partner?.account?.upiId ? (
+                <div>
+                  <Text size="xs" c="dimmed">
+                    UPI ID
+                  </Text>
+                  <Text size="xs" fw={500} className="text-gray-900 font-mono">
+                    {partner.account.upiId}
+                  </Text>
+                </div>
+              ) : null}
+
+              {partner?.account?.bankAccountNumber ? (
+                <>
+                  <div>
+                    <Text size="xs" c="dimmed">
+                      Account Holder
+                    </Text>
+                    <Text size="xs" fw={500} className="text-gray-900">
+                      {partner.account.bankAccountName || "N/A"}
+                    </Text>
+                  </div>
+                  <div>
+                    <Text size="xs" c="dimmed">
+                      Bank
+                    </Text>
+                    <Text size="xs" fw={500} className="text-gray-900">
+                      {partner.account.bankName || "N/A"}
+                    </Text>
+                  </div>
+                  <div>
+                    <Text size="xs" c="dimmed">
+                      Account Number
+                    </Text>
+                    <Text size="xs" fw={500} className="text-gray-900 font-mono">
+                      {partner.account.bankAccountNumber}
+                    </Text>
+                  </div>
+                  <div>
+                    <Text size="xs" c="dimmed">
+                      IFSC
+                    </Text>
+                    <Text size="xs" fw={500} className="text-gray-900 font-mono">
+                      {partner.account.bankIfsc || "N/A"}
+                    </Text>
+                  </div>
+                </>
+              ) : null}
+
+              {!partner?.account?.upiId &&
+              !partner?.account?.bankAccountNumber ? (
+                <Text size="xs" c="dimmed">
+                  This partner has not submitted payout details yet.
                 </Text>
-              </div>
-              <div>
-                <Text size="xs" c="dimmed">Bank Account ID</Text>
-                <div className="flex items-center gap-2">
-                  <Text size="xs" fw={500} className="text-gray-900 font-mono">
-                    {partner?.account?.rzpyBankAcctId || "N/A"}
-                  </Text>
-                  {partner?.account?.bankAccVerifiedOn && (
-                    <Badge size="xs" color="green" variant="light">
-                      Verified
-                    </Badge>
-                  )}
-                </div>
-              </div>
-              <div>
-                <Text size="xs" c="dimmed">VPA ID</Text>
-                <div className="flex items-center gap-2">
-                  <Text size="xs" fw={500} className="text-gray-900 font-mono">
-                    {partner?.account?.rzpyVPAId || "N/A"}
-                  </Text>
-                  {partner?.account?.VPAVerifiedOn && (
-                    <Badge size="xs" color="green" variant="light">
-                      Verified
-                    </Badge>
-                  )}
-                </div>
-              </div>
+              ) : null}
             </div>
           </Paper>
         </div>
