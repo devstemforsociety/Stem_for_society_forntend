@@ -78,7 +78,25 @@ function useTrainings() {
         await api().get<GenericResponse<StudentTraining[]>>("/trainings")
       ).data;
       if (!raw || !raw.data || !(raw.data.length > 0)) return {};
-      const arranged = raw.data.reduce(
+
+      /**
+       * Chronological, earliest first. The API returns newest-first and this
+       * only grouped by month, so the catalogue read backwards. Sorted here so
+       * the page stays right regardless of how the endpoint is ordered.
+       */
+      const undated: StudentTraining[] = [];
+      const dated: StudentTraining[] = [];
+
+      for (const tra of raw.data) {
+        const start = dayjs(tra.startDate);
+        (tra.startDate && start.isValid() ? dated : undated).push(tra);
+      }
+
+      dated.sort(
+        (a, b) => dayjs(a.startDate).valueOf() - dayjs(b.startDate).valueOf(),
+      );
+
+      const arranged = dated.reduce(
         (acc, tra) => {
           const date = dayjs(tra.startDate).format("MMM, YYYY");
           if (!acc[date]) acc[date] = [];
@@ -87,6 +105,12 @@ function useTrainings() {
         },
         {} as { [key: string]: StudentTraining[] },
       );
+
+      // A missing date previously produced a heading of "Invalid Date".
+      if (undated.length > 0) {
+        arranged["Date to be announced"] = undated;
+      }
+
       return arranged;
     },
     staleTime: 1000 * 60 * 10,

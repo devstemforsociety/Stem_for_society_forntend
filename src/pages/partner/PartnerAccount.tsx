@@ -151,7 +151,7 @@ export default function PartnerAccounts() {
               <SegmentedControl
                 data={[
                   { label: "Bank Account", value: "bank_account" },
-                  { label: "UPI", value: "vpa", disabled: true },
+                  { label: "UPI", value: "vpa" },
                 ]}
                 value={formData?.type}
                 onChange={(value) =>
@@ -162,12 +162,9 @@ export default function PartnerAccounts() {
                 className="w-full"
               />
 
-              {/* The UPI segment is disabled because the payout integration
-                  only supports bank accounts today. Left visible but explained,
-                  so partners stop hunting for a setting that does not exist. */}
               <Text size="xs" c="dimmed" mt={6}>
-                UPI payouts are not supported yet - payouts are sent to the bank
-                account below.
+                Choose where you would like to be paid. You only need to fill in
+                one of the two.
               </Text>
               
               <div className="space-y-4 pt-4">
@@ -224,8 +221,9 @@ export default function PartnerAccounts() {
                   </>
                 ) : formData?.type === "vpa" ? (
                   <TextInput
-                    label="UPI Address"
-                    placeholder="yourname@upi"
+                    label="UPI ID"
+                    placeholder="yourname@bank"
+                    description="Payouts to UPI are made manually by our team to this ID."
                     size="md"
                     required
                     name="address"
