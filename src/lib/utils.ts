@@ -109,10 +109,17 @@ export function formatDate(date: string | Date | null) {
   return !date ? "No date" : dayjs(date).format("ddd, DD MMM YYYY");
 }
 
+/**
+ * Human-readable course length.
+ *
+ * The fallback used to be "6 months" (and callers passed "6 weeks"), so a
+ * course with no dates advertised a duration nobody had set. Say nothing
+ * rather than something invented.
+ */
 export function calculateDuration(
   startDate?: string | Date | null,
   endDate?: string | Date | null,
-  fallback = "6 months",
+  fallback = "Duration to be announced",
 ) {
   if (!startDate || !endDate) return fallback;
 
@@ -135,10 +142,11 @@ export function calculateDuration(
   return `${days} day${days > 1 ? "s" : ""}`;
 }
 
+/** Same honesty rule as calculateDuration - this text goes into receipts. */
 export function calculateDurationForEmail(
   startDate?: string | Date | null,
   endDate?: string | Date | null,
-  fallback = "six months",
+  fallback = "the scheduled duration",
 ) {
   if (!startDate || !endDate) return fallback;
 

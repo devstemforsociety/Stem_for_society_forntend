@@ -33,3 +33,29 @@ export function formatCourseLocation(
 export function requiresMeetingLink(type: CourseDeliveryType): boolean {
   return type === "ONLINE" || type === "HYBRID";
 }
+
+/**
+ * Start and end of a course as one readable line.
+ *
+ * A course running 18:30 Friday to 18:30 Saturday rendered as
+ * "06:30 PM - 06:30 PM" next to a "1 day" label, which reads as a mistake.
+ * When the range crosses a day boundary each end is date-qualified.
+ */
+export function formatCourseSchedule(
+  start?: string | Date | null,
+  end?: string | Date | null,
+): string {
+  if (!start || !end) return "Schedule to be announced";
+
+  const from = new Date(start);
+  const to = new Date(end);
+  const date = (d: Date) =>
+    d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+  const time = (d: Date) =>
+    d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true });
+
+  const sameDay = from.toDateString() === to.toDateString();
+  return sameDay
+    ? `${date(from)}, ${time(from)} - ${time(to)}`
+    : `${date(from)}, ${time(from)} - ${date(to)}, ${time(to)}`;
+}

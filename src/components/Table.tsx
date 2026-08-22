@@ -16,6 +16,12 @@ type TableProps = {
     render: React.ReactNode;
   }[];
   selectable?: boolean;
+  /**
+   * Shown when there are no rows. "No data" cannot tell an empty account apart
+   * from a search that matched nothing, which leaves the reader unsure whether
+   * to clear the filter or go and add something.
+   */
+  emptyMessage?: string;
   selectableClassName?: ClassValue;
   selectedRows?: (number | string)[];
   setSelectedRows?: React.Dispatch<React.SetStateAction<(number | string)[]>>;
@@ -36,6 +42,7 @@ type TableProps = {
 export default function Table({
   headers,
   rows,
+  emptyMessage = "No data",
   classNames,
   selectable = false,
   selectableClassName,
@@ -172,9 +179,7 @@ export default function Table({
         <tbody>
           <tr>
             <td colSpan={headers.length + (selectable ? 1 : 0)} className="py-8 text-center">
-              <div className="italic text-gray-400">
-                No data
-              </div>
+              <div className="italic text-gray-400">{emptyMessage}</div>
             </td>
           </tr>
         </tbody>

@@ -91,11 +91,23 @@ export default function PartnerStudents() {
       <div className="animate-in fade-in duration-500 delay-100">
         {!students || students.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-            <p className="text-gray-500">No students found</p>
+            {/* An account with no students at all is a different situation
+                from a search that matched none of them, and the reader needs
+                to know which one they are looking at. */}
+            <p className="text-gray-500">
+              {search?.trim()
+                ? `No students match "${search.trim()}".`
+                : "No students have enrolled in your courses yet."}
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
             <Table
+              emptyMessage={
+                search?.trim()
+                  ? `No students match "${search.trim()}".`
+                  : "No students to show."
+              }
               headers={[
                 { id: 1, render: "S.No", className: "w-[8%] text-left pl-4" },
                 { id: 2, render: "Name", className: "text-left" },

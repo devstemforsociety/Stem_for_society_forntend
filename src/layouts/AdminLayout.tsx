@@ -18,6 +18,7 @@ import logo from "../assets/logo.webp";
 import { useAdmin } from "../lib/hooks";
 import { cn } from "../lib/utils";
 import { useEffect } from "react";
+import { Suspense } from "react";
 
 const AdminNavLinks = [
   {
@@ -264,7 +265,29 @@ export default function AdminLayout() {
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto">
           <RouteErrorBoundary>
-            <Outlet />
+            {/*
+             * Suspend inside the content area, not at the app root.
+             *
+             * The only Suspense boundary used to sit above <Routes>, so moving
+             * between pages replaced the entire screen - sidebar and header
+             * included - with a bare centred spinner, and the previous page
+             * stayed on screen until the new chunk arrived. Keeping the chrome
+             * mounted makes it obvious which section is loading.
+             */}
+            <Suspense
+              fallback={
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="flex min-h-[50vh] items-center justify-center gap-3 text-sm text-gray-500"
+                >
+                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                  Loading…
+                </div>
+              }
+            >
+              <Outlet />
+            </Suspense>
           </RouteErrorBoundary>
         </main>
       </div>

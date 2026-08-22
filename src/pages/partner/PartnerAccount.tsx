@@ -1,4 +1,11 @@
-import { Alert, Button, Paper, SegmentedControl, TextInput } from "@mantine/core";
+import {
+  Alert,
+  Button,
+  Paper,
+  SegmentedControl,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading";
@@ -154,6 +161,14 @@ export default function PartnerAccounts() {
                 size="md"
                 className="w-full"
               />
+
+              {/* The UPI segment is disabled because the payout integration
+                  only supports bank accounts today. Left visible but explained,
+                  so partners stop hunting for a setting that does not exist. */}
+              <Text size="xs" c="dimmed" mt={6}>
+                UPI payouts are not supported yet - payouts are sent to the bank
+                account below.
+              </Text>
               
               <div className="space-y-4 pt-4">
                 {formData?.type === "bank_account" ? (

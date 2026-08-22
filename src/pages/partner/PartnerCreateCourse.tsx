@@ -100,7 +100,7 @@ export default function PartnerCreateCourse() {
     meetingLink: "",
     startDate: null,
     endDate: null,
-    cost: 0,
+    cost: "" as unknown as number,
     category: null,
     mode: "ONLINE",
     whoIsItFor: [""],
@@ -111,6 +111,20 @@ export default function PartnerCreateCourse() {
   const { mutate: submitCourseDetails, isPending } = useCreateCourse();
 
   const handleSubmit = () => {
+    // Mirrors the server rules so the partner is told what is missing before a
+    // round trip, rather than after one.
+    if (
+      (formData.mode === "ONLINE" || formData.mode === "HYBRID") &&
+      !formData.meetingLink.trim()
+    ) {
+      toast.error("A meeting link is required for online and hybrid courses.");
+      return;
+    }
+    if (!formData.cost || Number(formData.cost) < 10) {
+      toast.error("Registration cost must be at least ₹10.");
+      return;
+    }
+
     try {
       submitCourseDetails(formData);
     } catch (error) {
@@ -372,6 +386,8 @@ export default function PartnerCreateCourse() {
                 label="Meeting Link"
                 placeholder="Enter Google Meet, Zoom, or Teams link"
                 size="md"
+                required
+                description="Students join an online course through this link."
                 leftSection={<Link2 size={16} />}
                 name="meetingLink"
                 value={formData.meetingLink}
@@ -512,8 +528,10 @@ export default function PartnerCreateCourse() {
               placeholder="Enter course fee"
               size="md"
               type="number"
+              description="Minimum ₹10. Leave courses free only by arrangement."
               leftSection={<span className="text-gray-600 font-medium">₹</span>}
               step={0.01}
+              min={10}
               name="cost"
               required
               value={formData.cost}

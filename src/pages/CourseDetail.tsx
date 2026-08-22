@@ -533,7 +533,7 @@ function RatingAndFeedback({
               <div>
                 <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Duration</p>
                 <p className="text-sm md:text-base font-semibold text-gray-900 mt-1">
-                  {calculateDuration(training?.startDate, training?.endDate, "6 weeks")}
+                  {calculateDuration(training?.startDate, training?.endDate)}
                 </p>
               </div>
               <div className="border-t border-gray-200 pt-3">

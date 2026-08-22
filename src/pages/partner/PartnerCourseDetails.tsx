@@ -31,7 +31,7 @@ import {
 } from "../../lib/utils";
 import { PartnerTraining } from "./PartnerTrainings";
 import ReactPlayer from "react-player";
-import { formatCourseLocation } from "@/lib/course";
+import { formatCourseLocation, formatCourseSchedule } from "@/lib/course";
 
 type PartnerTrainings = PartnerTraining & {
   enrolments: {
@@ -501,8 +501,7 @@ export default function PartnerCourseDetails() {
                         Duration
                       </Text>
                       <Text size="sm" fw={500}>
-                        {formatDate(event.startDate)} to{" "}
-                        {formatDate(event.endDate)}
+                        {formatCourseSchedule(event.startDate, event.endDate)}
                       </Text>
                     </div>
                     <div>

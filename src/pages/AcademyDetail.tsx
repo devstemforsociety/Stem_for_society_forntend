@@ -940,7 +940,7 @@ const AcademyDetail = () => {
               Duration
             </h4>
             <p className="text-gray-600 text-xs md:text-sm">
-              {calculateDuration(course?.startDate, course?.endDate, "6 months")}
+              {calculateDuration(course?.startDate, course?.endDate)}
             </p>
           </div>
           <div className="bg-white rounded-2xl p-4 md:p-6 text-center shadow-sm">
